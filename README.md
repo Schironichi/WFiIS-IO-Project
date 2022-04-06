@@ -1,0 +1,1 @@
+Repozytorium jest bez node modules - żeby je przywrócić npm install w folderach client i server
