@@ -1,4 +1,10 @@
 import React, {useEffect, useState} from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './components/pages/Home';
+import Notices from './components/pages/Notices';
+import Myprofile from './components/pages/Myprofile';
+import Footer from './components/Footer';
 
 function App()
 {
@@ -14,7 +20,17 @@ function App()
     )
   }, [])
   return (
-    <div>
+    <>
+      <Router>
+        <Navbar />
+        <Switch>  
+          <Route path='/' exact component={Home} />
+          <Route path='/notices' component={Notices} />     
+          <Route path='/myprofile' component={Myprofile} />
+        </Switch>
+      </Router>
+    </>
+    /*<div>
       {(typeof backendData.users === 'undefined') ? (
         <p>Loading...</p>
       ):(
@@ -22,7 +38,7 @@ function App()
           return <p key={i}>{users}</p>
         })
       )}
-    </div>
+    </div>*/
   )
 }
 
