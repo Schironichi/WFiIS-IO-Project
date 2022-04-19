@@ -5,7 +5,43 @@ import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
-    <div className='footer-container'>
+    <footer>
+      <section class='footer-links'>
+      <div class='footer-link-wrapper'>
+      
+
+      <Link
+                to='/pomoc'
+                className='footer-link-items'
+              
+              >
+               Pomoc
+              </Link>
+              <Link
+                to='/regulamin'
+                className='footer-link-items'
+                
+              >
+               Regulamin
+              </Link>
+              <Link
+                to='/organizacje_charytatywne'
+                className='footer-link-items'
+               
+              >
+               Organizacje charytatywne
+              </Link>
+              <Link
+                to='/tworcy'
+                className='footer-link-items'
+                
+              >
+               Twórcy
+              </Link>
+
+
+      </div>
+      </section>
       <section class='social-media'>
         <div class='social-media-wrap'>
                     
@@ -37,8 +73,13 @@ function Footer() {
           </div>
         </div>
       </section>
-    </div>
+
+    </footer>
   );
 }
 
 export default Footer;
+
+/*<div class='footer-subscription'>
+      <img src="herb.png"  width="100" height="100"/>
+      </div>*/

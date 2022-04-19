@@ -1,12 +1,12 @@
 import React from 'react';
-import './Button.css';
+import './Button_dodaj.css';
 import { Link } from 'react-router-dom';
 
-const STYLES = ['btn--primary', 'btn--outline', 'btn--test'];
+const STYLES = ['btn2--primary', 'btn2--outline', 'btn2--test'];
 
-const SIZES = ['btn--medium', 'btn--large'];
+const SIZES = ['btn2--medium', 'btn2--large'];
 
-export const Button = ({
+export const ButtonDodaj = ({
   children,
   type,
   onClick,
@@ -20,9 +20,9 @@ export const Button = ({
   const checkButtonSize = SIZES.includes(buttonSize) ? buttonSize : SIZES[0];
 
   return (
-    <Link to='/signup' className='btn-mobile'>
+    <Link to='/dodaj' className='btn-mobile'>
       <button
-        className={`btn ${checkButtonStyle} ${checkButtonSize}`}
+        className={`btn2 ${checkButtonStyle} ${checkButtonSize}`}
         onClick={onClick}
         type={type}
       >
