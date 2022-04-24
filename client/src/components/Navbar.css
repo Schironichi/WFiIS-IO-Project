@@ -1,12 +1,12 @@
 body{
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color:lightgrey;
+  background-color:#ccd6ff;
   height: 100%;
 }
 
 .navbar {
-    background: rgb(5, 46, 210);
+    background: #183194;
     margin: 0;
     height: 90px;
     display: flex;
