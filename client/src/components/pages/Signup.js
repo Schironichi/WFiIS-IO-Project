@@ -11,13 +11,14 @@ function Signup() {
   return (
     
     <>
-<form class="box" action="" method="post">
+<form class="box" action="../../register" method="post">
   <h1>Rejestracja</h1>
-  <input type="text" name="" placeholder="Imie i nazwisko" />
-  <input type="text" name="" placeholder="E-mail" />
-  <input type="text" name="" placeholder="Username" />
-  <input type="password" name="" placeholder="Password" />
-  <input type="submit" name="" value="Zarejestruj się" />
+  <input type="text" name="name" placeholder="Imie" required />
+  <input type="text" name="surname" placeholder="Nazwisko" required />
+  <input type="text" name="email" placeholder="E-mail" required />
+  <input type="text" name="login" placeholder="Username" required />
+  <input type="password" name="password" placeholder="Password" required />
+  <input type="submit" name="submit" value="Zarejestruj się" required />
   <br></br>
 
 </form>

@@ -11,10 +11,10 @@ function Login() {
   return (
     
     <>
-<form class="box" action="index.html" method="post">
+<form class="box" action="../../login" method="post">
   <h1>Logowanie</h1>
-  <input type="text" name="" placeholder="Username" />
-  <input type="password" name="" placeholder="Password" />
+  <input type="text" name="login" placeholder="Username" />
+  <input type="password" name="password" placeholder="Password" />
   <input type="submit" name="" value="Zaloguj się" />
   <br></br>
   <h2>Nie masz konta</h2>
