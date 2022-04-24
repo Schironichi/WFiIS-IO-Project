@@ -9,6 +9,9 @@ function initialize(passport, getUserByLogin, getUserById) {
         }
 
         try {
+            if (user.status === 'Pending') {
+                return done(null, false, { message: 'Nie potwierdzono konta' });
+            }
             if (await bcrypt.compare(password, user.password)) {
                 return done(null, user);
             } else {

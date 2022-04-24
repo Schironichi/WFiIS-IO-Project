@@ -20,8 +20,10 @@ Temporary solution just for testing purposes.
     - name
     - surname
     - email
+    - status - status of account - either Pending (waiting for mail auth) or Active
     - login
     - password
+    - authentication_string - token necessary for account activation. It is sent to user as part of email confirmation link
 
 There also are cookies used to maintain sessions properly.
 

@@ -12,6 +12,7 @@ const session = require('express-session');
 const methodOverride = require('method-override');
 
 const initializePassport = require('./passport-config');
+const nodemailer = require('./nodemailer-config');
 
 initializePassport(
     passport,
@@ -65,19 +66,40 @@ app.get('/register', checkNotAuthenticated, (req, res) => {
 app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let token = '';
+        for (let i = 0; i < 25; i++) {
+            token += characters[Math.floor(Math.random() * characters.length )];
+        }
         users.push({
             id: Date.now().toString(),
             name: req.body.name,
             surname: req.body.surname,
             email: req.body.email,
+            status: 'Pending',
             login: req.body.login,
-            password: hashedPassword
+            password: hashedPassword,
+            authentication_string: token
         });
+        
+        nodemailer.sendConfirmationEmail(req.body.name, req.body.email, token)
+        
         res.redirect('/login');
     } catch {
         res.redirect('/register');
     }
     console.log(users);
+});
+
+app.get('/confirm/:authentication_string', (req, res) => {
+    const user = users.find(user => user.authentication_string === req.params.authentication_string);
+        if (user == null) {
+            res.redirect('/register');
+        } else {
+            user.status = 'Active';
+            res.redirect('/login');
+            console.log(users);
+        }
 });
 
 app.get("/api", (req, res) => {
