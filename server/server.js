@@ -10,6 +10,7 @@ const passport = require('passport');
 const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
+const { Pool, Client } = require('pg')
 
 const initializePassport = require('./passport-config');
 const nodemailer = require('./nodemailer-config');
@@ -37,13 +38,45 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
 
-// app.use( function(req, res, next) {
-//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', '*');
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//     next();
-// });
+app.use( function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
+
+const pool = new Pool({
+    user: 'ltkdngtt',
+    host: 'hattie.db.elephantsql.com',
+    database: 'ltkdngtt',
+    password: 'xTmC3Rtx9MgSDJ3PSqRbnc5Ow1cEVDtg',
+    port: 5432,
+})
+
+pool.on('error', (err, client) => {
+    console.error('Unexpected error on idle client', err)
+    process.exit(-1)
+  })
+
+app.get("/baza", (req,res) => {
+    pool
+    .connect()
+    .then(async client => {
+        try {
+            const resp = await client
+                .query('SELECT * FROM  db.Notice ');
+            console.log(resp.rows);
+            res.status(200).send(resp.rows);
+            console.log("database data sent");
+            client.release();
+        } catch (err_1) {
+            client.release();
+            console.log(err_1.stack);
+        }
+  })
+  
+})
 
 app.get('/', checkAuthenticated, (req, res) => {
     res.render('index.ejs', { name: req.user.name });
