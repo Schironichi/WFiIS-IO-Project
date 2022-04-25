@@ -3,6 +3,7 @@ import '../../App.css';
 import { ButtonDodaj } from '../Button_dodaj';
 import Footer from '../Footer';
 import '../Navbar.css';
+import './Myprofile.css';
 
 class Myprofile extends React.Component {
 
@@ -42,46 +43,49 @@ class Myprofile extends React.Component {
       <>
         <div class='up'>
           <div class='dane'>
-            <h2> Twoje Dane {this.state.serverFirstName} {this.state.serverLastName} </h2>
+            <h2>
+                Twoje Dane
+                <button type='button' onClick={ () => this.saveAllClick(this) } style={ {marginLeft: '300px'} } >
+                  Zapisz zmiany
+                </button>
+            </h2>
 
-            <InputInProfile
-              type='text'
-              label='Login'
-              value={this.state.userName}
-              onChange={ (evt) => this.changeInput(evt, this.state.userName) }
-            />
+            <div id='user_personal_data_div'>
+              <InputInProfile
+                type='text'
+                label='Login'
+                value={this.state.userName}
+                onChange={ (evt) => this.changeInput(evt, this.state.userName) }
+              />
 
-            <InputInProfile 
-              type='text'
-              label='Imie' 
-              value={this.state.firstName} 
-              onChange={ (evt) => this.changeInput(evt, this.state.firstName) } 
-            />
+              <InputInProfile 
+                type='text'
+                label='Imie' 
+                value={this.state.firstName} 
+                onChange={ (evt) => this.changeInput(evt, this.state.firstName) } 
+              />
 
-            <InputInProfile 
-              type='text'
-              label='Nazwisko' 
-              value={this.state.lastName} 
-              onChange={ (evt) => this.changeInput(evt, this.state.lastName) } 
-            />
+              <InputInProfile 
+                type='text'
+                label='Nazwisko' 
+                value={this.state.lastName} 
+                onChange={ (evt) => this.changeInput(evt, this.state.lastName) } 
+              />
 
-            <InputInProfile 
-              type='email'
-              label='Email' 
-              value={this.state.email} 
-              onChange={ (evt) => this.changeInput(evt, this.state.email) } 
-            />
+              <InputInProfile 
+                type='email'
+                label='Email' 
+                value={this.state.email} 
+                onChange={ (evt) => this.changeInput(evt, this.state.email) } 
+              />
 
-            <InputInProfile 
-              type='password'
-              label='Hasło' 
-              value={this.state.password} 
-              onChange={ (evt) => this.changeInput(evt, this.state.password) } 
-            />
-
-            <p>
-              <button type='button' onClick={ () => this.saveAllClick(this) } > Save </button>
-            </p>
+              <InputInProfile 
+                type='password'
+                label='Hasło' 
+                value={this.state.password} 
+                onChange={ (evt) => this.changeInput(evt, this.state.password) } 
+              />
+            </div>
 
           </div>
             
@@ -91,7 +95,7 @@ class Myprofile extends React.Component {
 
         </div>
 
-        <div style={ {clear: 'both'} }> </div>
+        <div className='clear_div'> </div>
         
         <div class='down' style={ {marginBottom: '100px'} }>
           <Announcements />
@@ -122,13 +126,13 @@ class InputInProfile extends React.Component {
   render() {
     return (
       <>
-        <div className='main_profileInput_div' style={{background: '#b59847'}}>
+        <div className='main_profileInput_div'>
 
-          <div className='label_profileInput_div' style={{float: 'left', background: '#b54763', width: '200px'}}>
+          <div className='label_profileInput_div'>
             <label> {this.props.label}: </label>
           </div>
 
-          <div className='input_profileInput_div' style={{float: 'left', background: '#61b547'}}>
+          <div className='input_profileInput_div'>
             <input 
               type = {this.props.type} 
               value = {this.props.value}
@@ -138,7 +142,7 @@ class InputInProfile extends React.Component {
             <label> <input type='checkbox' onChange={ () => this.checkBoxChange(this) }/> Edytuj </label>
           </div>
 
-          <div className='clear_div' style={{clear: 'both'}}></div>
+          <div className='clear_div'></div>
         </div>
       </>
     );
@@ -157,22 +161,22 @@ class Announcements extends React.Component {
 
   createNotices() {
     this.announcements = this.state.keys.map( (num) =>
-    <li key={ num.toString() } style={ {background: 'blue', width: '100%'} } >
-      <fieldset style={ {background: 'green'} } >
+    <li key={ num.toString() } className='notices_li'>
+      <fieldset className='notices_filedset'>
         
-        <div style={ {float: 'left', width: '70%'} }>
+        <div className='notices_value_div'>
           <div> <h1> Ogłoszenie {num + 1} </h1> </div>
           <div>
             <p> { this.state.values[num] } </p>
           </div>
         </div>
 
-        <div style={ {float: 'left'} }>
+        <div className='notices_buttons_div'>
           <button type='button'> Edytuj </button>
           <button type='button'> Usuń </button>
         </div>
 
-        <div style={ {clear: 'both'} }></div>
+        <div className='clear_div' ></div>
       </fieldset>
     </li>
     );
@@ -190,7 +194,7 @@ class Announcements extends React.Component {
     return (
       <>
         <h2> Twoje ogłoszenia </h2>
-        <ul style={ {background: 'red', width: '100%'} }>
+        <ul className='notices_ul'>
           {this.announcements}
         </ul>
       </>
@@ -209,22 +213,22 @@ class Messages extends React.Component {
 
   createNotices() {
     this.messages = this.state.keys.map( (num) =>
-    <li key={ num.toString() } style={ {background: 'blue', width: '100%'} } >
-      <fieldset style={ {background: 'green'} } >
+    <li key={ num.toString() } className='notices_li' >
+      <fieldset className='notices_filedset'>
         
-        <div style={ {float: 'left', width: '70%'} }>
+        <div className='notices_value_div'>
           <div> <h1> powiadomienie {num + 1} </h1> </div>
           <div>
             <p> { this.state.values[num] } </p>
           </div>
         </div>
 
-        <div style={ {float: 'left'} }>
+        <div  className='notices_buttons_div'>
           <button type='button'> Potwierdź </button>
           <button type='button'> Anuluj </button>
         </div>
 
-        <div style={ {clear: 'both'} }></div>
+        <div className='clear_div'></div>
       </fieldset>
     </li>
     );
@@ -242,7 +246,7 @@ class Messages extends React.Component {
     return (
       <>
         <h2> Twoje powiadomienia </h2>
-        <ul style={ {background: 'red', width: '100%'} }>
+        <ul className='notices_ul'>
           {this.messages}
         </ul>
       </>

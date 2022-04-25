@@ -1,0 +1,87 @@
+input {
+    border-style: none;
+    height: 30px;
+    min-width: 200px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
+
+input[ type='checkbox' ] {
+    height: 20px;
+    min-width: 20px;
+    margin-left: 20px;
+}
+
+button[ type='button' ] {
+    height: 40px;
+    margin: 20px;
+    border-style: none;
+    border-radius: 10px;
+}
+
+button[ type='button' ]:hover {
+    background: rgb(119, 222, 222);
+}
+
+.dane {
+    margin-bottom: 60px;
+}
+
+.down {
+    margin-left: 15px;
+}
+
+.main_profileInput_div {
+    margin-bottom: 5px;
+    margin-left: 20px;
+}
+
+.label_profileInput_div {
+    display: inline;
+    float: left;
+    height: 30px;
+    width: 100px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.input_profileInput_div {
+    float: left;
+}
+
+.notices_li {
+    width: 95%;
+    margin-bottom: 10px;
+}
+
+.notices_filedset {
+    border-radius: 15px;
+    background: #ffffff;
+    color: rgb(0, 0, 0);
+}
+
+.notices_value_div {
+    float: left;
+    width: 80%;
+}
+
+.notices_buttons_div {
+    float: left;
+    width: 20%;
+}
+
+.notices_ul {
+    width: 100%;
+    margin-bottom: 60px;
+}
+
+.clear_div {
+    clear: both;
+}
+
+#user_personal_data_div {
+    background: #091a72;
+    color: rgb(119, 222, 222);
+    border-radius: 15px
+}
