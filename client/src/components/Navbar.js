@@ -28,7 +28,7 @@ function Navbar() {
     <>
       <nav className='navbar'>
         <div className='navbar-container'>
-         
+         <div className='navbar-logo'> ogUAszamy.pl </div>
           <div className='menu-icon' onClick={handleClick}>
             <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
           </div>
@@ -40,11 +40,11 @@ function Navbar() {
             </li>
             <li className='nav-item'>
               <Link
-                to='/notices'
+                to='/login'
                 className='nav-links'
                 onClick={closeMobileMenu}
               >
-               Ogłoszenia
+               Logowanie
               </Link>
             </li>
 
@@ -55,6 +55,15 @@ function Navbar() {
                 onClick={closeMobileMenu}
               >
                Mój profil
+              </Link>
+            </li>
+            <li className='nav-item'>
+              <Link
+                to='/kontakt'
+                className='nav-links'
+                onClick={closeMobileMenu}
+              >
+               Kontakt
               </Link>
             </li>
             
