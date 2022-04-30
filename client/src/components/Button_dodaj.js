@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const STYLES = ['btn2--primary', 'btn2--outline', 'btn2--test'];
 
-const SIZES = ['btn2--medium', 'btn2--large'];
+const SIZES = ['btn2--medium', 'btn2--large', 'btn2--small'];
 
 export const ButtonDodaj = ({
   children,

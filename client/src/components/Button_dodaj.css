@@ -24,20 +24,28 @@
     transition: all 0.3s ease-out;
   }
   
-  .btn2--medium {
+  .btn2--large {
     padding: 18px 30px;
     font-size: 25px;
     font-weight: 700;
   }
   
-  .btn2--large {
+  .btn2--medium {
     padding: 12px 26px;
-    font-size: 25px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .btn2--small 
+  {
+    padding: 6px 22px;
+    font-size: 15px;
+    font-weight: 500;
   }
   
   .btn2--large:hover,
-  .btn2--medium:hover {
+  .btn2--medium:hover,
+  .btn2--small:hover {
     transition: all 0.3s ease-out;
     background: rgb(223, 225, 88);
     color: #242424;

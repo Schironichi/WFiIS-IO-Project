@@ -3,7 +3,7 @@ import '../../App.css';
 import Footer from '../Footer';
 import '../Navbar.css';
 import './Home.css';
-
+import {Advert} from './Advert'
 
 class Home extends React.Component{
 
@@ -77,18 +77,7 @@ class Home extends React.Component{
         </div>
         <div class="content">
           <h2>Ogłoszenia</h2>
-          <p id = "ogloszenia">
-            
-            {this.state.type}<br></br>
-            {this.state.priority}<br></br>
-            {this.state.creation_date}<br></br>
-            {this.state.expiration_date}<br></br>
-            {this.state.reports_number}<br></br>
-            {this.state.city}<br></br>
-            
-  
-          </p>
-  
+          <Advert data={this.state}/>
           </div>
         <Footer />
       </>
