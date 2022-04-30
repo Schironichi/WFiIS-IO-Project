@@ -19,7 +19,7 @@ export const Advert = ({
             </div>
             <div class="advert-control">
                 <ButtonDodaj className={'adv-button'} buttonSize={'btn2--small'}>Zobacz ogloszenie</ButtonDodaj>
-                <ButtonDodaj className={'adv-button'} buttonSize={'btn2--small'}>Rezerwuj</ButtonDodaj>
+                {data.status=="active"?<ButtonDodaj className={'adv-button'} buttonSize={'btn2--small'}>Rezerwuj</ButtonDodaj>:null}
             </div>
         </div>
     );

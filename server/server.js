@@ -68,7 +68,7 @@ app.get("/baza", (req,res) => {
     .then(async client => {
         try {
             const resp = await client
-                .query('SELECT * FROM  db.Notice ');
+                .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status');
             console.log(resp.rows);
             res.status(200).send(resp.rows);
             console.log("database data sent");

@@ -4,8 +4,6 @@ import Navbar from './components/Navbar';
 import Home from './components/pages/Home';
 import Myprofile from './components/pages/Myprofile';
 
-import Footer from './components/Footer';
-
 import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
 import Dodaj_ogloszenie from './components/pages/Dodaj_ogloszenie'
