@@ -11,7 +11,8 @@ export const ButtonDodaj = ({
   type,
   onClick,
   buttonStyle,
-  buttonSize
+  buttonSize,
+  rest
 }) => {
   const checkButtonStyle = STYLES.includes(buttonStyle)
     ? buttonStyle
@@ -20,7 +21,7 @@ export const ButtonDodaj = ({
   const checkButtonSize = SIZES.includes(buttonSize) ? buttonSize : SIZES[0];
 
   return (
-    <Link to='/dodaj' className='btn-mobile'>
+    <Link to={rest} className='btn-mobile'>
       <button
         className={`btn2 ${checkButtonStyle} ${checkButtonSize}`}
         onClick={onClick}

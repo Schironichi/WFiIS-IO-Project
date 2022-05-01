@@ -17,7 +17,8 @@ class Home extends React.Component{
       expiration_date: "",
       reports_number: "",
       city: "",
-      status:""
+      status:"",
+      category:""
     };
   }
 
@@ -35,6 +36,7 @@ class Home extends React.Component{
           this.setState( {city: response[0].city} );
           this.setState( {tab: response[0].city} );
           this.setState( {status: response[0].status_description} );
+          this.setState( {category: response[0].id_category} );
           console.log(response)
         }
         

@@ -33,6 +33,14 @@
     padding: 12px 26px;
     font-size: 20px;
   }
+
+  .btn2--small 
+  {
+    padding: 6px 22px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  
   
   .btn--large:hover,
   .btn--medium:hover {
