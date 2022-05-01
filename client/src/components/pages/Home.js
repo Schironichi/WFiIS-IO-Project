@@ -3,7 +3,7 @@ import '../../App.css';
 import Footer from '../Footer';
 import '../Navbar.css';
 import './Home.css';
-
+import {Advert} from './Advert'
 
 class Home extends React.Component{
 
@@ -16,8 +16,9 @@ class Home extends React.Component{
       creation_date: "",
       expiration_date: "",
       reports_number: "",
-      city: ""
-
+      city: "",
+      status:"",
+      category:""
     };
   }
 
@@ -34,7 +35,9 @@ class Home extends React.Component{
           this.setState( {reports_number: response[0].reports_number} );
           this.setState( {city: response[0].city} );
           this.setState( {tab: response[0].city} );
-          console.log(this.state.type)
+          this.setState( {status: response[0].status_description} );
+          this.setState( {category: response[0].id_category} );
+          console.log(response)
         }
         
       }
@@ -77,18 +80,7 @@ class Home extends React.Component{
         </div>
         <div class="content">
           <h2>Ogłoszenia</h2>
-          <p id = "ogloszenia">
-            
-            {this.state.type}<br></br>
-            {this.state.priority}<br></br>
-            {this.state.creation_date}<br></br>
-            {this.state.expiration_date}<br></br>
-            {this.state.reports_number}<br></br>
-            {this.state.city}<br></br>
-            
-  
-          </p>
-  
+          <Advert data={this.state}/>
           </div>
         <Footer />
       </>

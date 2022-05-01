@@ -4,14 +4,15 @@ import { Link } from 'react-router-dom';
 
 const STYLES = ['btn2--primary', 'btn2--outline', 'btn2--test'];
 
-const SIZES = ['btn2--medium', 'btn2--large'];
+const SIZES = ['btn2--medium', 'btn2--large', 'btn2--small'];
 
 export const ButtonDodaj = ({
   children,
   type,
   onClick,
   buttonStyle,
-  buttonSize
+  buttonSize,
+  rest
 }) => {
   const checkButtonStyle = STYLES.includes(buttonStyle)
     ? buttonStyle
@@ -20,7 +21,7 @@ export const ButtonDodaj = ({
   const checkButtonSize = SIZES.includes(buttonSize) ? buttonSize : SIZES[0];
 
   return (
-    <Link to='/dodaj' className='btn-mobile'>
+    <Link to={rest} className='btn-mobile'>
       <button
         className={`btn2 ${checkButtonStyle} ${checkButtonSize}`}
         onClick={onClick}

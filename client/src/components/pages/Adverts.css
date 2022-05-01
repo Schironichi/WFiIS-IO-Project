@@ -1,0 +1,38 @@
+.advert-container *
+{
+    display:block;
+    float:left;
+}
+.advert-container
+{
+    line-height: 70px;
+    width:95%;
+    border: 2px solid grey;
+    border-radius: 3px;
+    background-color: white;
+    height:100px;
+}
+.advert-control
+{
+    float:right;
+    margin-right:10px;
+    margin-top: 20px;
+}
+.advert-container .btn2
+{
+    margin-top: 15px;
+    margin-right: 20px;
+}
+.status-info
+{
+    line-height: 30px;
+    margin-right: 20px;
+}
+.active-status
+{
+    color:green;
+}
+.inactive-status
+{
+    color:red;
+}
