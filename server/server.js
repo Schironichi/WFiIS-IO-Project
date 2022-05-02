@@ -95,6 +95,39 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     failureFlash: true
 }));
 
+function insertQuery(query, values, callback) {
+    return new Promise(function (fulfill, reject) {
+        pool
+        .connect()
+        .then(async client => {
+            try {
+                const resp = await client
+                    .query(query, values);
+                console.log('-----\tIN\t-----');
+                let out = null
+                if (resp.rows.length > 0) {
+                    console.log(resp.rows);
+                    out = resp.rows
+                } else {
+                    console.log('No response data');
+                }
+                console.log("Successful db operation");
+                console.log('-----\tOUT\t-----');
+                client.release();
+                fulfill(out);
+                reject(null);
+            } catch (err_1) {
+                client.release();
+                console.log('-----\tERROR!!!\t-----');
+                console.log(err_1.message);
+                console.log('-----\tERROR!?!\t-----');
+                fulfill(null);
+                reject(null);
+            }
+        });
+    });
+};
+
 app.get('/register', checkNotAuthenticated, (req, res) => {
     res.render('register.ejs');
 });
@@ -104,27 +137,44 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let token = '';
+        token += req.body.login;
         for (let i = 0; i < 25; i++) {
-            token += characters[Math.floor(Math.random() * characters.length )];
+            token += characters[Math.floor(Math.random() * characters.length)];
         }
-        users.push({
-            id: Date.now().toString(),
-            name: req.body.name,
-            surname: req.body.surname,
-            email: req.body.email,
-            status: 'Pending',
-            login: req.body.login,
-            password: hashedPassword,
-            authentication_string: token
+        insertQuery(
+            `INSERT INTO db.app_user (name, surname, email, status) VALUES ($1, $2, $3, 'Pending') returning id_user`,
+            [
+                req.body.name,
+                req.body.surname,
+                req.body.email
+            ]
+        ).then(function(out) {
+            if (out != null) {
+                console.log(out[0].id_user);
+                insertQuery(
+                    `INSERT INTO db.authentication VALUES ($1, $2)`,
+                    [
+                        out[0].id_user,
+                        token
+                    ]
+                );
+                insertQuery(
+                    `INSERT INTO db.verification VALUES ($1, $2, $3)`,
+                    [
+                        out[0].id_user,
+                        req.body.login,
+                        hashedPassword
+                    ]
+                );
+                nodemailer.sendConfirmationEmail(req.body.name, req.body.email, token);
+                res.redirect('/login');
+            } else {
+                res.redirect('/register');
+            }
         });
-        
-        nodemailer.sendConfirmationEmail(req.body.name, req.body.email, token)
-        
-        res.redirect('/login');
     } catch {
         res.redirect('/register');
     }
-    console.log(users);
 });
 
 app.get('/confirm/:authentication_string', (req, res) => {
