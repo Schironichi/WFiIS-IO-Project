@@ -28,6 +28,7 @@ class Home extends React.Component{
       response => {
 
         for (let i = 0; i < response.length; i+=1){
+          this.setState( {id: response[0].id_notice} );
           this.setState( {type: response[0].type} );
           this.setState( {priority: response[0].priority} );
           this.setState( {creation_date: response[0].creation_date} );
