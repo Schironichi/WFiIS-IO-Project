@@ -2,6 +2,9 @@
     npm run dev
 Note: After turning it on, it resets automatically with each saved change in files.
 
+# Missing packages / errors?
+    npm install
+
 # Available server pages
 They are mainly for testing:
 
