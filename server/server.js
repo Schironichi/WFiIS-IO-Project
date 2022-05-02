@@ -95,7 +95,7 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     failureFlash: true
 }));
 
-function insertQuery(query, values, callback) {
+function executeQuery(query, values, callback) {
     return new Promise(function (fulfill, reject) {
         pool
         .connect()
@@ -141,7 +141,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         for (let i = 0; i < 25; i++) {
             token += characters[Math.floor(Math.random() * characters.length)];
         }
-        insertQuery(
+        executeQuery(
             `INSERT INTO db.app_user (name, surname, email, status) VALUES ($1, $2, $3, 'Pending') returning id_user`,
             [
                 req.body.name,
@@ -151,14 +151,14 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         ).then(function(out) {
             if (out != null) {
                 console.log(out[0].id_user);
-                insertQuery(
+                executeQuery(
                     `INSERT INTO db.authentication VALUES ($1, $2)`,
                     [
                         out[0].id_user,
                         token
                     ]
                 );
-                insertQuery(
+                executeQuery(
                     `INSERT INTO db.verification VALUES ($1, $2, $3)`,
                     [
                         out[0].id_user,
@@ -178,14 +178,37 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
 });
 
 app.get('/confirm/:authentication_string', (req, res) => {
-    const user = users.find(user => user.authentication_string === req.params.authentication_string);
-        if (user == null) {
-            res.redirect('/register');
+    executeQuery(
+        'SELECT id_user FROM db.authentication where authentication_string = $1',
+        [
+            req.params.authentication_string
+        ]
+    ).then(function(out) {
+        if (out != null) {
+            executeQuery(
+                `UPDATE db.app_user SET status = 'Active' WHERE id_user = $1 RETURNING id_user`,
+                [
+                    out[0].id_user
+                ]
+            ).then(function(id) {
+                if (id != null) {
+                    executeQuery(
+                        `DELETE FROM db.authentication WHERE id_user = $1 RETURNING id_user`,
+                        [
+                            id[0].id_user
+                        ]
+                    );
+                    res.redirect('/login');
+                } else {
+                    console.log('No user in DB');
+                    res.redirect('/register');
+                }
+            });
         } else {
-            user.status = 'Active';
-            res.redirect('/login');
-            console.log(users);
+            console.log('No auth_string in DB');
+            res.redirect('/register');
         }
+    });
 });
 
 app.get("/api", (req, res) => {
