@@ -17,11 +17,22 @@ const nodemailer = require('./nodemailer-config');
 
 initializePassport(
     passport,
-    login => users.find(user => user.login === login),
-    id => users.find(user => user.id === id)
+    login => executeQuery(
+        `SELECT u.id_user, u.status, v.password FROM db.app_user u 
+        JOIN db.verification v on v.id_user = u.id_user
+        WHERE v.login = $1`,
+        [
+            login
+        ]
+    ),
+    id => executeQuery(
+        `SELECT name, surname, email FROM db.app_user u 
+        WHERE u.id_user = $1`,
+        [
+            id
+        ]
+    )
 );
-
-const users = [];
 
 app.set('view-engine', 'ejs');
 
@@ -106,12 +117,12 @@ function executeQuery(query, values, callback) {
                 console.log('-----\tIN\t-----');
                 let out = null
                 if (resp.rows.length > 0) {
-                    console.log(resp.rows);
                     out = resp.rows
                 } else {
                     console.log('No response data');
                 }
                 console.log("Successful db operation");
+                console.log(out);
                 console.log('-----\tOUT\t-----');
                 client.release();
                 fulfill(out);
