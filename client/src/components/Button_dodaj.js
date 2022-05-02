@@ -1,6 +1,8 @@
 import React from 'react';
 import './Button_dodaj.css';
 import { Link } from 'react-router-dom';
+import Notice_details from './pages/Notice_details';
+import  {Reservation}  from './pages/Reservation';
 
 const STYLES = ['btn2--primary', 'btn2--outline', 'btn2--test'];
 
@@ -12,7 +14,8 @@ export const ButtonDodaj = ({
   onClick,
   buttonStyle,
   buttonSize,
-  rest
+  rest,
+  param
 }) => {
   const checkButtonStyle = STYLES.includes(buttonStyle)
     ? buttonStyle
@@ -20,9 +23,12 @@ export const ButtonDodaj = ({
 
   const checkButtonSize = SIZES.includes(buttonSize) ? buttonSize : SIZES[0];
 
+
   return (
-    <Link to={rest} className='btn-mobile'>
+
+      <Link to={{pathname: `/${rest}/${param}`, state: param}}>
       <button
+  
         className={`btn2 ${checkButtonStyle} ${checkButtonSize}`}
         onClick={onClick}
         type={type}
@@ -30,5 +36,6 @@ export const ButtonDodaj = ({
         {children}
       </button>
     </Link>
+
   );
 };

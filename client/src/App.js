@@ -7,6 +7,12 @@ import Myprofile from './components/pages/Myprofile';
 import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
 import Dodaj_ogloszenie from './components/pages/Dodaj_ogloszenie'
+import Footer from './components/Footer';
+import Notice_details from './components/pages/Notice_details';
+import Child from './components/pages/Notice_details';
+import  ReservationDetail   from './components/pages/Reservation';
+import Reservation from './components/pages/Reservation';
+import { Advert } from './components/pages/Advert';
 
 function App()
 {
@@ -31,8 +37,12 @@ function App()
           <Route path='/myprofile' component={Myprofile} />
           <Route path='/signup' component={Signup} />
           <Route path='/dodaj' component={Dodaj_ogloszenie} />
+          <Route path='/noticedetails/:id' component={Notice_details}/>
+          <Route path='/zarezerwowano/:id' component={Reservation}>
+          </Route>
+
         </Switch>
-     
+      <Footer/>
       </Router>
     </>
     /*<div>
