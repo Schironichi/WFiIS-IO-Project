@@ -11,6 +11,7 @@ import Alert from "react-bootstrap/Alert";
 
 export const Advert = ({
     data,
+    key,
     onClick
 }) => {
 
@@ -50,7 +51,7 @@ export const Advert = ({
             <div class="advert-control">
                 {data.status_description==="active"?
                 <p class="status-info active-status">Aktywny</p>:<p class="status-info inactive-status">Nieaktywny</p>}
-                <ButtonDodaj param={data.id} rest={'noticedetails'} onClick={showAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Zobacz ogloszenie</ButtonDodaj>
+                <ButtonDodaj param={data.id_notice} rest={'noticedetails'} onClick={showAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Zobacz ogloszenie</ButtonDodaj>
                 {data.status_description==="active"?<ButtonDodaj param={data.id} rest={'zarezerwowano'} onClick={reserveAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Rezerwuj</ButtonDodaj>:null}
             </div>
         </div>
