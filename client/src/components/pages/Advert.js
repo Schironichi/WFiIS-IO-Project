@@ -39,7 +39,7 @@ export const Advert = ({
     getDate();
     return (
         <div class="advert-container">
-            <Icon num={data.category}/>
+            {data.category!==""?<Icon num={data.id_category}/>:null}
             <div>
                 <p class="advert-entry">Typ: {data.type}</p>
                 <p class="advert-entry">Priorytet: {data.priority}</p>
@@ -48,10 +48,10 @@ export const Advert = ({
                 <p class="advert-entry">Miasto: {data.city}</p>
             </div>
             <div class="advert-control">
-                {data.status=="active"?
+                {data.status_description==="active"?
                 <p class="status-info active-status">Aktywny</p>:<p class="status-info inactive-status">Nieaktywny</p>}
                 <ButtonDodaj param={data.id} rest={'noticedetails'} onClick={showAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Zobacz ogloszenie</ButtonDodaj>
-                {data.status=="active"?<ButtonDodaj param={data.id} rest={'zarezerwowano'} onClick={reserveAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Rezerwuj</ButtonDodaj>:null}
+                {data.status_description==="active"?<ButtonDodaj param={data.id} rest={'zarezerwowano'} onClick={reserveAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Rezerwuj</ButtonDodaj>:null}
             </div>
         </div>
     );
