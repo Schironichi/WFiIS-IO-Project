@@ -51,7 +51,6 @@ export class Notice_details extends React.Component {
               this.setState( {city: response[0].city} );
               this.setState( {status: response[0].status_description} );
               this.setState( {opis: response[0].notice_description} );
-              console.log(response)
             }
             
           }

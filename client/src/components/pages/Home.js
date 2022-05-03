@@ -73,7 +73,8 @@ class Home extends React.Component{
     let dbRes = (await fetch("http://localhost:5000/baza")).json().then(
       response => {
         for (let i = 0; i < response.length; i+=1){
-          this.setState( {id: response[0].id_notice} );
+          this.setState( {id_user: response[0].id_user} );
+          this.setState( {id_notice: response[0].id_notice} );
           this.setState( {type: response[0].type} );
           this.setState( {priority: response[0].priority} );
           this.setState( {creation_date: response[0].creation_date} );
