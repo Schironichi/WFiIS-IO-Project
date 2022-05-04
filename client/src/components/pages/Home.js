@@ -19,11 +19,12 @@ class Home extends React.Component{
       reports_number: "",
       city: "",
       status:"",
-      category:""
+      category:"",
+      searched:false
     };
     this.filterAdverts = this.filterAdverts.bind(this)
-    this.filterCat = this.filterCat.bind(this)
-    this.getFilteredAdverts = this.getFilteredAdverts.bind(this)
+    this.searchAdd = this.searchAdd.bind(this)
+    this.stopSearch = this.stopSearch.bind(this)
   }
 
   filterAdverts = () => {
@@ -49,21 +50,35 @@ class Home extends React.Component{
         return obj.id_category === num;
       });
     }
+    var str=document.getElementById("search-field").value;
+    if(str.length>0&&this.state.searched)
+    {
+        arr = arr.filter(function( obj ) {
+          var x=false;
+          Object.entries(obj).map(item => {
+            if(String(item[1]).includes(str))
+            {
+              x=true;
+            }
+          })
+        return x;
+      });
+    }
     this.setState({visableData:arr});
   }
 
-  filterCat = () => {
-    var num=document.getElementById("kat-select").selectedIndex;
-    console.clear();
-    console.log(this.state.visableData);
-    console.log(this.state.data);
-    
-    console.log(this.state.visableData);
+  searchAdd = () => {
+    var str=document.getElementById("search-field").value;
+    if(str.length>0)
+    {
+      this.setState({searched: true},this.filterAdverts);
+    }
   }
 
-  getFilteredAdverts = () => {
-    this.filterAdverts();
-    this.filterCat();
+  stopSearch = () =>
+  {
+    document.getElementById("search-field").value="";
+    this.setState({searched: false},this.filterAdverts);
   }
 
   async componentDidMount() {
@@ -95,8 +110,9 @@ class Home extends React.Component{
         <div class="header">
           <form class="contact-form" action="#" >
             <div class="contact-form-ico">  <i class="fas fa-search"></i></div>
-            <input class="contact-form-text" type="text" name="baza" placeholder="Szukaj..." />
-            <input class="contact-form-btn" type="submit" value="Szukaj" />
+            <input id="search-field" class="contact-form-text" type="text" name="baza" placeholder="Szukaj..." />
+              <input onClick={this.searchAdd} class="contact-form-btn" type="button" value="Szukaj" />
+              {this.state.searched?<input onClick={this.stopSearch} class="contact-form-btn stop-search" style={{marginLeft:"10px",width:"100px",minWidth:"100px"}} type="button" value="X" />:null}
           </form>
         </div>
         <div class='header2'>
