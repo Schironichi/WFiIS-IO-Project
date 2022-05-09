@@ -221,7 +221,7 @@ class Announcements extends React.Component {
           <h2>Twoje ogłoszenia</h2>
         
           {data.map(adv => (
-            <Advert key={adv.id_notice} data={adv} buttons={["Edytuj","Usuń"]} res={["edytowanie","editAdvert","usuwanie","removeAdvert"]}/>
+            <Advert key={adv.id_notice} data={adv} buttons={["Edytuj","Usuń"]} res={["editing","editAdvert","deleting","deleteAdvert"]}/>
           ))}
           </div>
       </>
