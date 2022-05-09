@@ -217,17 +217,35 @@ class Announcements extends React.Component {
     );
   }
 
+  async componentDidMount() {
+    let dbRes = (await fetch("http://localhost:5000/baza")).json().then(
+      response => {
+        for (let i = 0; i < response.length; i+=1){
+          this.setState( {id_user: response[0].id_user} );
+          this.setState( {id_notice: response[0].id_notice} );
+          this.setState( {type: response[0].type} );
+          this.setState( {priority: response[0].priority} );
+          this.setState( {creation_date: response[0].creation_date} );
+          this.setState( {expiration_date: response[0].expiration_date} );
+          this.setState( {reports_number: response[0].reports_number} );
+          this.setState( {city: response[0].city} );
+          this.setState( {status_description: response[0].status_description} );
+          this.setState( {category: response[0].id_category} );
+        }
+        this.setState({data:response});
+      }
+    )
+  } 
 
   render() {
-
     const { data} = this.state;
     return (
       <>
-        <div class="content">
+         <div class="content">
           <h2>Twoje ogłoszenia</h2>
         
           {data.map(adv => (
-            <Advert key={adv.id_notice} data={adv} buttons={["Zobacz ogłoszenie","Edytuj"]} res={["editAdvert"]}/>
+            <Advert key={adv.id_notice} data={adv} buttons={["Edytuj","Usuń"]} res={["editing","editAdvert","deleting","deleteAdvert"]}/>
           ))}
           </div>
       </>
@@ -270,7 +288,7 @@ class Messages extends React.Component {
   componentDidMount() {
     //send request for messages data
     let numbers = [0, 1, 2];
-    let data = [ "Lorem Ipsum1", "Lorem Ipsum2", "Lorem Ipsum3" ];
+    let data = [ "Lorem   Ipsum1", "Lorem Ipsum2", "Lorem Ipsum3" ];
     
     this.setState( { keys: numbers, values: data}, () => this.createNotices(this) );
   }
