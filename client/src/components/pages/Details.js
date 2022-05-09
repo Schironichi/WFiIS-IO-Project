@@ -39,6 +39,8 @@ export const Details = ({
                 <p class="advert-entry"><b>Miasto:</b> {data.city}</p>
                 <p class="advert-entry"><b>Opis:</b> {data.opis}</p>
             </div>
+            <div>
+            {data.status==="active"?<ButtonDodaj param={data.id} rest={'zarezerwowano'} onClick={reserveAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Rezerwuj</ButtonDodaj>:null}            </div>
         </div>
     );
 };

@@ -81,7 +81,7 @@ class Home extends React.Component{
           this.setState( {expiration_date: response[0].expiration_date} );
           this.setState( {reports_number: response[0].reports_number} );
           this.setState( {city: response[0].city} );
-          this.setState( {status: response[0].status_description} );
+          this.setState( {status_description: response[0].status_description} );
           this.setState( {category: response[0].id_category} );
         }
         this.setState({data:response});
