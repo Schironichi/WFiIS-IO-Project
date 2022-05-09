@@ -142,8 +142,8 @@ class Home extends React.Component{
         <div class="content">
           <h2>Ogłoszenia</h2>
           {this.state.visableData.map(adv => (
-            <Advert key={adv.id_notice} data={adv}/>
-          ))}
+            <Advert key={adv.id_notice} data={adv} buttons={["Zobacz ogłoszenie", "Rezerwuj"]} res={["noticedetails", "showAdvert","zarezerwowano", "reserveAdvert"]}/>
+            ))}
           </div>
         <Footer />
       </>
