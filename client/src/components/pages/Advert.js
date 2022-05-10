@@ -2,17 +2,34 @@ import React from 'react';
 import { ButtonDodaj } from '../Button_dodaj';
 import './Adverts.css';
 import { Icon } from './Icon';
+import { Notice_details } from './Notice_details';
+import { Navbar } from '../Navbar';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import Alert from "react-bootstrap/Alert";
+
 
 export const Advert = ({
     data,
+    key,
+    res,
+    buttons,
     onClick
 }) => {
-    function showAdvert(){
-        console.log("show");
-    }
-    function  reserveAdvert(){
-        console.log("reserve");
-    }
+
+   
+
+  const showAdvert = () => {
+    console.show("advert")
+  }
+
+
+
+  function  reserveAdvert(){
+    console.show("advert")
+}
+
+
     function getDate(expiration_date)
     {
         if(String.length>0)
@@ -25,7 +42,7 @@ export const Advert = ({
     getDate();
     return (
         <div class="advert-container">
-            <Icon num={data.category}/>
+            {data.category!==""?<Icon num={data.id_category}/>:null}
             <div>
                 <p class="advert-entry">Typ: {data.type}</p>
                 <p class="advert-entry">Priorytet: {data.priority}</p>
@@ -34,10 +51,10 @@ export const Advert = ({
                 <p class="advert-entry">Miasto: {data.city}</p>
             </div>
             <div class="advert-control">
-                {data.status=="active"?
-                <p class="status-info active-status">Aktywny</p>:<p class="status-info inactive-status">Nieaktywny</p>}
-                <ButtonDodaj rest={''} onClick={showAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Zobacz ogloszenie</ButtonDodaj>
-                {data.status=="active"?<ButtonDodaj rest={''} onClick={reserveAdvert} className={'adv-button'} buttonSize={'btn2--small'}>Rezerwuj</ButtonDodaj>:null}
+                {data.status_description==="active"?
+                <p class="status-info active-status">Aktywny</p>:<p class="status-info inactive-status">Zarezerwowany</p>}
+                <ButtonDodaj param={data.id_notice} rest={res[0]} onClick={res[1]} className={'adv-button'} buttonSize={'btn2--small'}>{buttons[0]}</ButtonDodaj>
+                {data.status_description==="active"?<ButtonDodaj param={data.id_notice} rest={res[2]} onClick={res[3]} className={'adv-button'} buttonSize={'btn2--small'}>{buttons[1]}</ButtonDodaj>:null}
             </div>
         </div>
     );

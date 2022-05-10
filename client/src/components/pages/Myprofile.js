@@ -4,6 +4,7 @@ import { ButtonDodaj } from '../Button_dodaj';
 import Footer from '../Footer';
 import '../Navbar.css';
 import './Myprofile.css';
+import { Advert } from './Advert';
 
 class Myprofile extends React.Component {
 
@@ -16,7 +17,8 @@ class Myprofile extends React.Component {
       email: "Email",
       password: "Hasło",
       serverFirstName: "",
-      serverLastName: ""
+      serverLastName: "",
+      
     };
   }
 
@@ -27,6 +29,7 @@ class Myprofile extends React.Component {
     this.setState( {serverLastName: (await data).lastName} );
     this.setState( { firstName: (await data).firstName } );
     this.setState( { lastName: (await data).lastName } );
+    
   }
 
   changeInput( evt, property ) {
@@ -154,10 +157,42 @@ class Announcements extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      data: [],
+      visableData:[],
+      type: "",
+      priority: "",
+      creation_date: "",
+      expiration_date: "",
+      reports_number: "",
+      city: "",
+      status:"",
+      category:""
+    };
 
-    this.state = { keys: [0], values: ["Puste Pole"] };
-    this.announcements = null;
   }
+
+
+
+  async componentDidMount() {
+    let dbRes = (await fetch("http://localhost:5000/baza")).json().then(
+      response => {
+        for (let i = 0; i < response.length; i+=1){
+          this.setState( {id_user: response[0].id_user} );
+          this.setState( {id_notice: response[0].id_notice} );
+          this.setState( {type: response[0].type} );
+          this.setState( {priority: response[0].priority} );
+          this.setState( {creation_date: response[0].creation_date} );
+          this.setState( {expiration_date: response[0].expiration_date} );
+          this.setState( {reports_number: response[0].reports_number} );
+          this.setState( {city: response[0].city} );
+          this.setState( {status_description: response[0].status_description} );
+          this.setState( {category: response[0].id_category} );
+        }
+        this.setState({data:response});
+      }
+    )
+  } 
 
   createNotices() {
     this.announcements = this.state.keys.map( (num) =>
@@ -182,21 +217,37 @@ class Announcements extends React.Component {
     );
   }
 
-  componentDidMount() {
-    //send request for notices data
-    let numbers = [0, 1, 2];
-    let data = [ "Lorem Ipsum1", "Lorem Ipsum2", "Lorem Ipsum3" ];
-    
-    this.setState( { keys: numbers, values: data}, () => this.createNotices(this) );
-  }
+  async componentDidMount() {
+    let dbRes = (await fetch("http://localhost:5000/baza")).json().then(
+      response => {
+        for (let i = 0; i < response.length; i+=1){
+          this.setState( {id_user: response[0].id_user} );
+          this.setState( {id_notice: response[0].id_notice} );
+          this.setState( {type: response[0].type} );
+          this.setState( {priority: response[0].priority} );
+          this.setState( {creation_date: response[0].creation_date} );
+          this.setState( {expiration_date: response[0].expiration_date} );
+          this.setState( {reports_number: response[0].reports_number} );
+          this.setState( {city: response[0].city} );
+          this.setState( {status_description: response[0].status_description} );
+          this.setState( {category: response[0].id_category} );
+        }
+        this.setState({data:response});
+      }
+    )
+  } 
 
   render() {
+    const { data} = this.state;
     return (
       <>
-        <h2> Twoje ogłoszenia </h2>
-        <ul className='notices_ul'>
-          {this.announcements}
-        </ul>
+         <div class="content">
+          <h2>Twoje ogłoszenia</h2>
+        
+          {data.map(adv => (
+            <Advert key={adv.id_notice} data={adv} buttons={["Edytuj","Usuń"]} res={["editing","editAdvert","deleting","deleteAdvert"]}/>
+          ))}
+          </div>
       </>
     );
   }
@@ -237,7 +288,7 @@ class Messages extends React.Component {
   componentDidMount() {
     //send request for messages data
     let numbers = [0, 1, 2];
-    let data = [ "Lorem Ipsum1", "Lorem Ipsum2", "Lorem Ipsum3" ];
+    let data = [ "Lorem   Ipsum1", "Lorem Ipsum2", "Lorem Ipsum3" ];
     
     this.setState( { keys: numbers, values: data}, () => this.createNotices(this) );
   }

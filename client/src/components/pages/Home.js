@@ -10,7 +10,8 @@ class Home extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      tab: [],
+      data: [],
+      visableData:[],
       type: "",
       priority: "",
       creation_date: "",
@@ -18,56 +19,116 @@ class Home extends React.Component{
       reports_number: "",
       city: "",
       status:"",
-      category:""
+      category:"",
+      searched:false
     };
+    this.filterAdverts = this.filterAdverts.bind(this)
+    this.searchAdd = this.searchAdd.bind(this)
+    this.stopSearch = this.stopSearch.bind(this)
+  }
+
+  filterAdverts = () => {
+    let search = [];
+    let give = [];
+    if(document.getElementById("poszukuje").checked)
+    {
+      search = this.state.data.filter(function( obj ) {
+        return obj.type === "szukam";
+      });
+    }
+    if(document.getElementById("oddaje").checked)
+    {
+      give = this.state.data.filter(function( obj ) {
+        return obj.type === "oglaszam";
+      });
+    }
+    let arr=search.concat(give);
+    var num=document.getElementById("kat-select").selectedIndex;
+    if(num>0)
+    {
+      arr = arr.filter(function( obj ) {
+        return obj.id_category === num;
+      });
+    }
+    var str=document.getElementById("search-field").value;
+    if(str.length>0&&this.state.searched)
+    {
+        arr = arr.filter(function( obj ) {
+          var x=false;
+          Object.entries(obj).map(item => {
+            if(String(item[1]).includes(str))
+            {
+              x=true;
+            }
+          })
+        return x;
+      });
+    }
+    this.setState({visableData:arr});
+  }
+
+  searchAdd = () => {
+    var str=document.getElementById("search-field").value;
+    if(str.length>0)
+    {
+      this.setState({searched: true},this.filterAdverts);
+    }
+  }
+
+  stopSearch = () =>
+  {
+    document.getElementById("search-field").value="";
+    this.setState({searched: false},this.filterAdverts);
   }
 
   async componentDidMount() {
+    document.getElementById("poszukuje").checked=true;
+    document.getElementById("oddaje").checked=true;
     //taking database data from server
     let dbRes = (await fetch("http://localhost:5000/baza")).json().then(
       response => {
-
         for (let i = 0; i < response.length; i+=1){
+          this.setState( {id_user: response[0].id_user} );
+          this.setState( {id_notice: response[0].id_notice} );
           this.setState( {type: response[0].type} );
           this.setState( {priority: response[0].priority} );
           this.setState( {creation_date: response[0].creation_date} );
           this.setState( {expiration_date: response[0].expiration_date} );
           this.setState( {reports_number: response[0].reports_number} );
           this.setState( {city: response[0].city} );
-          this.setState( {tab: response[0].city} );
-          this.setState( {status: response[0].status_description} );
+          this.setState( {status_description: response[0].status_description} );
           this.setState( {category: response[0].id_category} );
-          console.log(response)
         }
-        
+        this.setState({data:response});
+        this.filterAdverts();
       }
     )
   } 
   
   render() {
-  
     return (
       <>
         <div class="header">
           <form class="contact-form" action="#" >
             <div class="contact-form-ico">  <i class="fas fa-search"></i></div>
-            <input class="contact-form-text" type="text" name="baza" placeholder="Szukaj..." />
-            <input class="contact-form-btn" type="submit" value="Szukaj" />
+            <input id="search-field" class="contact-form-text" type="text" name="baza" placeholder="Szukaj..." />
+              <input onClick={this.searchAdd} class="contact-form-btn" type="button" value="Szukaj" />
+              {this.state.searched?<input onClick={this.stopSearch} class="contact-form-btn stop-search" style={{marginLeft:"10px",width:"100px",minWidth:"100px"}} type="button" value="X" />:null}
           </form>
         </div>
         <div class='header2'>
           <h2>Filtry</h2>
           <div id="typ-osoby-filtr">
             <b>Typ osoby:</b>
-            <input type="checkbox" id="poszukuje" name="poszukuje"
+            <input type="checkbox" onChange={this.filterAdverts} id="poszukuje" name="poszukuje"
             />
             <label for="poszukuje">Poszukuje</label>
-            <input type="checkbox" id="oddaje" name="oddaje" />
+            <input type="checkbox" onChange={this.filterAdverts} id="oddaje" name="oddaje"/>
             <label for="radio">Oddaje</label>
           </div>
           <div id="kategoria-filtr">
             <b>Kategoria:</b>
-            <select name="kat" id="kat-select">
+            <select name="kat" id="kat-select" onChange={this.filterAdverts}>
               <option value="">--Wszystko--</option>
               <option value="Mieszkanie">Mieszkanie</option>
               <option value="Zywnosc">Żywność</option>
@@ -80,7 +141,9 @@ class Home extends React.Component{
         </div>
         <div class="content">
           <h2>Ogłoszenia</h2>
-          <Advert data={this.state}/>
+          {this.state.visableData.map(adv => (
+            <Advert key={adv.id_notice} data={adv} buttons={["Zobacz ogłoszenie", "Rezerwuj"]} res={["noticedetails", "showAdvert","reserved", "reserveAdvert"]}/>
+            ))}
           </div>
         <Footer />
       </>

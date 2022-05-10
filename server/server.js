@@ -15,6 +15,8 @@ const { Pool, Client } = require('pg')
 const initializePassport = require('./passport-config');
 const nodemailer = require('./nodemailer-config');
 
+
+
 initializePassport(
     passport,
     login => executeQuery(
@@ -66,6 +68,7 @@ const pool = new Pool({
     database: 'ltkdngtt',
     password: 'xTmC3Rtx9MgSDJ3PSqRbnc5Ow1cEVDtg',
     port: 5432,
+    multipleStatements: true
 })
 
 pool.on('error', (err, client) => {
@@ -82,7 +85,28 @@ app.get("/baza", (req,res) => {
                 .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status');
             console.log(resp.rows);
             res.status(200).send(resp.rows);
-            console.log("database data sent");
+            client.release();
+        } catch (err_1) {
+            client.release();
+            console.log(err_1.stack);
+        }
+  })
+  
+})
+
+
+app.get("/details/:id", (req,res) => {
+    pool
+    .connect()
+    .then(async client => {
+        try {
+            const id = req.params.id
+                console.log("id to uptade", id);
+            const resp = await client
+                .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status join db.Notice_details nd on n.id_notice=nd.id_notice WHERE n.id_notice=$1',[id]);
+            console.log(resp.rows);
+            res.status(200).send(resp.rows);
+            console.log("database notice detials");
             client.release();
         } catch (err_1) {
             client.release();
@@ -138,6 +162,50 @@ function executeQuery(query, values, callback) {
         });
     });
 };
+
+app.get("/changeToReservation/:id", (req,res) => {  
+        pool
+        .connect()
+        .then(async client => {
+            try {
+                const id = req.params.id
+                console.log("id to uptade", id);
+                const resp = await client
+                    .query('UPDATE db.Notice SET id_status=\'RES\' WHERE id_notice=$1 ; ', [id]);
+                console.log(resp.rows);
+                res.status(200).send(resp.rows);
+                console.log("database updated", id);
+                client.release();
+            } catch (err_1) {
+                client.release();
+                console.log(err_1.stack);
+            }
+      })
+      
+    })
+
+
+
+    app.get("/updateNoticeHistory/:id", (req,res) => {  
+        pool
+        .connect()
+        .then(async client => {
+            try {
+                const id = req.params.id
+                console.log("id to uptade", id);
+                const resp = await client
+                    .query('INSERT INTO db.Activity (id_notice, id_history, type, date, activity_description) VALUES ($1, 1, \'wpis\', GETDATE(), \'Rezerwacja ogloszenia\' );; ', [id]);
+                console.log(resp.rows);
+                res.status(200).send(resp.rows);
+                console.log("database updated", id);
+                client.release();
+            } catch (err_1) {
+                client.release();
+                console.log(err_1.stack);
+            }
+      })
+      
+    })
 
 app.get('/register', checkNotAuthenticated, (req, res) => {
     res.render('register.ejs');
