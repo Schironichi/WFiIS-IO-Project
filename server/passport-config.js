@@ -3,28 +3,35 @@ const bcrypt = require('bcrypt');
 
 function initialize(passport, getUserByLogin, getUserById) {
     const authenticateUser = async (login, password, done) => {
-        const user = getUserByLogin(login);
+        const user = await getUserByLogin(login);
         if (user == null) {
             return done(null, false, { message: 'Niepoprawny login' });
-        }
-
-        try {
-            if (user.status === 'Pending') {
-                return done(null, false, { message: 'Nie potwierdzono konta' });
+        } else {
+            try {
+                if (user[0].status === 'Pending') {
+                    return done(null, false, { message: 'Nie potwierdzono konta' });
+                }
+                if (await bcrypt.compare(password, user[0].password)) {
+                    return done(null, user[0]);
+                } else {
+                    return done(null, false, { message: 'Niepoprawne hasło' });
+                }
+            } catch (e) {
+                return done(e);
             }
-            if (await bcrypt.compare(password, user.password)) {
-                return done(null, user);
-            } else {
-                return done(null, false, { message: 'Niepoprawne hasło' });
-            }
-        } catch (e) {
-            return done(e);
         }
     }
 
     passport.use(new LocalStrategy({ usernameField: 'login' }, authenticateUser));
-    passport.serializeUser((user, done) => done(null, user.id));
-    passport.deserializeUser((id, done) => done(null, getUserById(id)));
+    passport.serializeUser((user, done) => done(null, user.id_user));
+    passport.deserializeUser(async (id, done) => {
+        const user = await getUserById(id);
+        if (user != null) {
+            done(null, user[0]);
+        } else {
+            done(null, false, { message: 'Nieznany błąd' });
+        }
+    });
 }
 
 module.exports = initialize;

@@ -19,11 +19,22 @@ const nodemailer = require('./nodemailer-config');
 
 initializePassport(
     passport,
-    login => users.find(user => user.login === login),
-    id => users.find(user => user.id === id)
+    login => executeQuery(
+        `SELECT u.id_user, u.status, v.password FROM db.app_user u 
+        JOIN db.verification v on v.id_user = u.id_user
+        WHERE v.login = $1`,
+        [
+            login
+        ]
+    ),
+    id => executeQuery(
+        `SELECT name, surname, email FROM db.app_user u 
+        WHERE u.id_user = $1`,
+        [
+            id
+        ]
+    )
 );
-
-const users = [];
 
 app.set('view-engine', 'ejs');
 
@@ -119,6 +130,38 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     failureFlash: true
 }));
 
+function executeQuery(query, values, callback) {
+    return new Promise(function (fulfill, reject) {
+        pool
+        .connect()
+        .then(async client => {
+            try {
+                const resp = await client
+                    .query(query, values);
+                console.log('-----\tIN\t-----');
+                let out = null
+                if (resp.rows.length > 0) {
+                    out = resp.rows
+                } else {
+                    console.log('No response data');
+                }
+                console.log("Successful db operation");
+                console.log(out);
+                console.log('-----\tOUT\t-----');
+                client.release();
+                fulfill(out);
+                reject(null);
+            } catch (err_1) {
+                client.release();
+                console.log('-----\tERROR!!!\t-----');
+                console.log(err_1.message);
+                console.log('-----\tERROR!?!\t-----');
+                fulfill(null);
+                reject(null);
+            }
+        });
+    });
+};
 
 app.get("/changeToReservation/:id", (req,res) => {  
         pool
@@ -173,38 +216,78 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let token = '';
+        token += req.body.login;
         for (let i = 0; i < 25; i++) {
-            token += characters[Math.floor(Math.random() * characters.length )];
+            token += characters[Math.floor(Math.random() * characters.length)];
         }
-        users.push({
-            id: Date.now().toString(),
-            name: req.body.name,
-            surname: req.body.surname,
-            email: req.body.email,
-            status: 'Pending',
-            login: req.body.login,
-            password: hashedPassword,
-            authentication_string: token
+        executeQuery(
+            `INSERT INTO db.app_user (name, surname, email, status) VALUES ($1, $2, $3, 'Pending') returning id_user`,
+            [
+                req.body.name,
+                req.body.surname,
+                req.body.email
+            ]
+        ).then(function(out) {
+            if (out != null) {
+                console.log(out[0].id_user);
+                executeQuery(
+                    `INSERT INTO db.authentication VALUES ($1, $2)`,
+                    [
+                        out[0].id_user,
+                        token
+                    ]
+                );
+                executeQuery(
+                    `INSERT INTO db.verification VALUES ($1, $2, $3)`,
+                    [
+                        out[0].id_user,
+                        req.body.login,
+                        hashedPassword
+                    ]
+                );
+                nodemailer.sendConfirmationEmail(req.body.name, req.body.email, token);
+                res.redirect('/login');
+            } else {
+                res.redirect('/register');
+            }
         });
-        
-        nodemailer.sendConfirmationEmail(req.body.name, req.body.email, token)
-        
-        res.redirect('/login');
     } catch {
         res.redirect('/register');
     }
-    console.log(users);
 });
 
 app.get('/confirm/:authentication_string', (req, res) => {
-    const user = users.find(user => user.authentication_string === req.params.authentication_string);
-        if (user == null) {
-            res.redirect('/register');
+    executeQuery(
+        'SELECT id_user FROM db.authentication where authentication_string = $1',
+        [
+            req.params.authentication_string
+        ]
+    ).then(function(out) {
+        if (out != null) {
+            executeQuery(
+                `UPDATE db.app_user SET status = 'Active' WHERE id_user = $1 RETURNING id_user`,
+                [
+                    out[0].id_user
+                ]
+            ).then(function(id) {
+                if (id != null) {
+                    executeQuery(
+                        `DELETE FROM db.authentication WHERE id_user = $1 RETURNING id_user`,
+                        [
+                            id[0].id_user
+                        ]
+                    );
+                    res.redirect('/login');
+                } else {
+                    console.log('No user in DB');
+                    res.redirect('/register');
+                }
+            });
         } else {
-            user.status = 'Active';
-            res.redirect('/login');
-            console.log(users);
+            console.log('No auth_string in DB');
+            res.redirect('/register');
         }
+    });
 });
 
 app.get("/api", (req, res) => {
