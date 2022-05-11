@@ -129,7 +129,7 @@ class Home extends React.Component{
             <Advert key={adv.id_notice} data={adv}/>
           ))}
           </div>
-        <Footer />
+       
       </>
     );
   

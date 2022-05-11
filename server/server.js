@@ -81,8 +81,24 @@ app.get("/baza", (req,res) => {
         }
   })
   
-})
-
+});
+app.get("/organizacje", (req,res) => {
+    pool
+    .connect()
+    .then(async client => {
+        try {
+            const resp = await client
+                .query('SELECT * FROM  db.organization');
+            console.log(resp.rows);
+            res.status(200).send(resp.rows);
+            client.release();
+        } catch (err_1) {
+            client.release();
+            console.log(err_1.stack);
+        }
+  })
+  
+});
 
 app.get("/details/:id", (req,res) => {
     pool
@@ -153,7 +169,9 @@ app.get("/changeToReservation/:id", (req,res) => {
                 const resp = await client
                     .query('INSERT INTO db.Activity (id_notice, id_history, type, date, activity_description) VALUES ($1, 1, \'wpis\', GETDATE(), \'Rezerwacja ogloszenia\' );; ', [id]);
                 console.log(resp.rows);
+               
                 res.status(200).send(resp.rows);
+                
                 console.log("database updated", id);
                 client.release();
             } catch (err_1) {
