@@ -93,7 +93,7 @@ class Myprofile extends React.Component {
           </div>
             
           <div class='dodaj'>
-            <ButtonDodaj rest={"/dodaj"}>Dodaj ogłoszenie</ButtonDodaj>
+            <ButtonDodaj rest={"dodaj"}>Dodaj ogłoszenie</ButtonDodaj>
           </div>
 
         </div>

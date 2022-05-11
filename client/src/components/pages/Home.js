@@ -145,7 +145,7 @@ class Home extends React.Component{
             <Advert key={adv.id_notice} data={adv} buttons={["Zobacz ogłoszenie", "Rezerwuj"]} res={["noticedetails", "showAdvert","reserved", "reserveAdvert"]}/>
             ))}
           </div>
-        <Footer />
+       
       </>
     );
   
