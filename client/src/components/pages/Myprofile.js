@@ -175,7 +175,7 @@ class Announcements extends React.Component {
 
 
   async componentDidMount() {
-    let dbRes = (await fetch("http://localhost:5000/baza")).json().then(
+    let dbRes = (await fetch("http://localhost:5000/bazaOgloszenUsera")).json().then(
       response => {
         for (let i = 0; i < response.length; i+=1){
           this.setState( {id_user: response[0].id_user} );
