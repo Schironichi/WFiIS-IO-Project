@@ -92,14 +92,17 @@ app.get("/baza", (req,res) => {
         }
   })
   
-});
+})
 app.get("/organizacje", (req,res) => {
+
     pool
     .connect()
     .then(async client => {
         try {
+
             const resp = await client
                 .query('SELECT * FROM  db.organization');
+
             console.log(resp.rows);
             res.status(200).send(resp.rows);
             client.release();
@@ -109,7 +112,28 @@ app.get("/organizacje", (req,res) => {
         }
   })
   
+
 });
+
+app.get("/bazaOgloszenUsera",checkNotAuthenticated, (req,res) => {
+    pool
+    .connect()
+    .then(async client => {
+        try {
+            const id =req.user
+            console.log("to id usera",id)
+            const resp = await client
+                .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status WHERE n.id_user=$1',[id]);
+            console.log(resp.rows);
+            res.status(200).send(resp.rows);
+            client.release();
+        } catch (err_1) {
+            client.release();
+            console.log(err_1.stack);
+        }
+  })
+  
+})
 
 app.get("/details/:id", (req,res) => {
     pool
