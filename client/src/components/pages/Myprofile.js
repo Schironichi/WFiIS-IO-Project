@@ -11,25 +11,30 @@ class Myprofile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userName: "Login",
-      firstName: "Imie",
-      lastName: "Nazwisko",
-      email: "Email",
-      password: "Hasło",
-      serverFirstName: "",
-      serverLastName: "",
-      
+      id: { value: 'None' },
+      login: { value: "Login" },
+      firstName: { value: "Imie" },
+      lastName: { value: "Nazwisko"},
+      email: { value: "Email" },
+      password: { value: "" },
     };
   }
 
   async componentDidMount() {
     //taking user data from server
-    let data = (await fetch("http://localhost:5000/api/getUserData")).json();
-    this.setState( {serverFirstName: (await data).firstName} );
-    this.setState( {serverLastName: (await data).lastName} );
-    this.setState( { firstName: (await data).firstName } );
-    this.setState( { lastName: (await data).lastName } );
+    let data = await (await fetch("http://localhost:5000/api/getUserData")).json();
     
+    console.log( `data: ${ JSON.stringify(data) }` );
+    if ( data.logged === false ) {
+      window.location.replace("http://localhost:3000/login");
+    }
+    else {
+      this.setState( { firstName: { value: data.firstName} } );
+      this.setState( { lastName: { value: data.lastName} } );
+      this.setState( { email: { value: data.email} })
+      this.setState( { login: { value: data.login} })
+      this.setState( { id: {value: data.id} } );
+    }
   }
 
   changeInput( evt, property ) {
@@ -37,8 +42,43 @@ class Myprofile extends React.Component {
     this.setState( property );
   }
 
-  saveAllClick() {
+async saveAllClick() {
     //all changes saved in state send to server
+    let changes = { id: this.state.id.value };
+    let data = await ( (await fetch("http://localhost:5000/api/getUserData")).json() );
+    
+    console.log( `data: ${data}` );
+    if( data.login !== this.state.login.value ) {
+      console.log(` login changed: ${data.login} != ${this.state.login.value}` )
+      changes = Object.assign( changes, {login: this.state.login.value } );
+    }
+    if( data.firstName !== this.state.firstName.value ) {
+      console.log(` fname changed: ${data.firstName} != ${this.state.firstName.value}` )
+      changes = Object.assign( changes, {name : this.state.firstName.value} );
+    }
+    if( data.lastName !== this.state.lastName.value ) {
+      console.log(` lname changed: ${data.lastName} != ${this.state.lastName.value}` )
+      changes = Object.assign( changes, {surname: this.state.lastName.value} );
+    }
+    if( data.email !== this.state.email.value ) {
+      console.log(` email changed: ${data.email} != ${this.state.email.value}` )
+      changes = Object.assign( changes, {email: this.state.email.value} );
+    }
+
+    console.log(`changes: ${JSON.stringify(changes)}`);
+
+    let resp = await fetch("http://localhost:5000/api/changeUserData", {
+      method: 'POST',
+      headers:{ "Accept": "application/json", 'Content-Type': 'application/json' },
+      body: JSON.stringify(changes)
+    });
+    resp = await resp.json();
+    console.log(` res: ${ JSON.stringify( resp ) }`);
+    if( resp.message === 'great succes' )
+      window.location.reload();
+    else 
+      console.log("not so great succes");
+  
   }
   
   render() {
@@ -57,35 +97,35 @@ class Myprofile extends React.Component {
               <InputInProfile
                 type='text'
                 label='Login'
-                value={this.state.userName}
-                onChange={ (evt) => this.changeInput(evt, this.state.userName) }
+                value={this.state.login.value}
+                onChange={ (evt) => this.changeInput(evt, this.state.login) }
               />
 
               <InputInProfile 
                 type='text'
                 label='Imie' 
-                value={this.state.firstName} 
+                value={this.state.firstName.value} 
                 onChange={ (evt) => this.changeInput(evt, this.state.firstName) } 
               />
 
               <InputInProfile 
                 type='text'
                 label='Nazwisko' 
-                value={this.state.lastName} 
+                value={this.state.lastName.value} 
                 onChange={ (evt) => this.changeInput(evt, this.state.lastName) } 
               />
 
               <InputInProfile 
                 type='email'
                 label='Email' 
-                value={this.state.email} 
+                value={this.state.email.value} 
                 onChange={ (evt) => this.changeInput(evt, this.state.email) } 
               />
 
               <InputInProfile 
                 type='password'
                 label='Hasło' 
-                value={this.state.password} 
+                value={this.state.password.value} 
                 onChange={ (evt) => this.changeInput(evt, this.state.password) } 
               />
             </div>
