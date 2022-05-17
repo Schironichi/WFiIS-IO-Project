@@ -165,10 +165,14 @@ app.get('/login', checkNotAuthenticated, (req, res) => {
 });
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/',
     failureRedirect: '/login',
-    failureFlash: true
-}));
+    failureFlash: false
+}), function(req, res) {
+    console.log('\n------------------------------\n');
+    console.log(req.user);
+    console.log('\n------------------------------\n');
+    res.status(200).send(req.user);
+  });
 
 function executeQuery(query, values, callback) {
     return new Promise(function (fulfill, reject) {
@@ -224,7 +228,19 @@ app.get("/changeToReservation/:id", (req,res) => {
       
     })
 
-
+    app.get("/edited", (req,res) => {  
+        pool
+        .connect()
+        .then(async client => {
+            try {
+                executeQuery("UPDATE notice_details SET notice_description = $1 WHERE id_notice = $2", [req.content, req.id_notice]);
+                executeQuery("UPDATE notice SET id_category = $1 WHERE id_notice = $2", [req.category, req.id_notice]);
+            } catch (err_1) {
+                console.log(err_1.stack);
+            }
+      })
+      
+    })
 
     app.get("/updateNoticeHistory/:id", (req,res) => {  
         pool

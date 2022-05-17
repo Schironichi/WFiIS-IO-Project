@@ -10,6 +10,7 @@ import Regulamin from './components/pages/Regulamin';
 import Pomoc from './components/pages/Pomoc';
 import Tworcy from './components/pages/Tworcy';
 import Kontakt from './components/pages/Kontakt';
+import EditNotice from './components/pages/EditNotice'
 
 import Dodaj_ogloszenie from './components/pages/Dodaj_ogloszenie'
 import Footer from './components/Footer';
@@ -49,6 +50,7 @@ function App()
           <Route path='/dodaj' component={Dodaj_ogloszenie} />
           <Route path='/noticedetails/:id' component={Notice_details}/>
           <Route path='/zarezerwowano/:id' component={Reservation}/>
+          <Route path='/editing/:id' component={EditNotice} />
 
           <Route path='/organizacje_charytatywne' component={Organizations} />
         
