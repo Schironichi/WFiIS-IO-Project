@@ -298,6 +298,56 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
     }
 });
 
+
+
+//app.get('/dodaj_ogloszenie',  (req, res) => {
+//    res.render('dodaj_ogloszenie.ejs');
+//});
+
+app.post('/dodaj_ogloszenie', async (req, res) => {
+    try {
+        console.log(req.body.kategoria);
+        console.log(req.body.uzytkownik);
+        console.log(req.body.typ);
+        console.log(req.body.lokalizacja);
+        executeQuery(
+            `INSERT INTO db.Notice (id_category,id_subcategory,  id_organization, id_status, id_user, type, priority, creation_date, expiration_date, reports_number, city) 
+            VALUES ($1,1,1,'active', $2, $3, 'wyroznione', CURRENT_DATE,CURRENT_DATE + INTERVAL '5 day', 0, $4) returning id_notice`,
+            [
+                req.body.kategoria,
+                req.body.uzytkownik,
+                req.body.typ,
+                req.body.lokalizacja
+            ]
+        ).then(function(out) {
+            if (out != null) {
+                console.log(out[0].id_notice);
+                console.log(req.body.tytul);
+                console.log(req.body.opis);
+                executeQuery(
+                    `INSERT INTO db.Notice_details (id_notice, notice_title, notice_description) 
+                    VALUES ($1, $2, $3)`,
+                    [
+                        out[0].id_notice,
+                        req.body.tytul,
+                        req.body.opis
+                    ]
+                );
+                
+                
+                res.redirect('/myprofile');
+            } else {
+                res.redirect('/dodaj');
+            }
+        });
+       
+    } catch {
+        res.redirect('/dodaj');
+    }
+});
+
+
+
 app.get('/confirm/:authentication_string', (req, res) => {
     executeQuery(
         'SELECT id_user FROM db.authentication where authentication_string = $1',
