@@ -5,6 +5,7 @@ import Footer from '../Footer';
 import '../Navbar.css';
 import './Myprofile.css';
 import { Advert } from './Advert';
+import Dialog from './Dialog';
 
 class Myprofile extends React.Component {
 
@@ -34,7 +35,33 @@ class Myprofile extends React.Component {
       this.setState( { email: { value: data.email} })
       this.setState( { login: { value: data.login} })
       this.setState( { id: {value: data.id} } );
+      this.setState( { dialogOpen: false } );
     }
+  }
+
+  closeDialog() {
+    this.setState( {dialogOpen: false} );
+  }
+
+  async confirm() {
+    let res = await fetch("http://localhost:5000/api/userPasswordChange", {
+      method: "POST",
+      headers:{ "Accept": "application/json", 'Content-Type': 'application/json' },
+      body: JSON.stringify( { 
+        id: this.state.id.value,
+        login: this.state.login,
+        password: this.state.password.value
+      } )
+    });
+
+    res = await res.json();
+    console.log( JSON.stringify( res ) );
+    this.closeDialog();
+    window.location.reload();
+  }
+
+  decline() {
+    this.closeDialog();
   }
 
   changeInput( evt, property ) {
@@ -65,6 +92,12 @@ async saveAllClick() {
       changes = Object.assign( changes, {email: this.state.email.value} );
     }
 
+    if( this.state.password.value !== "" ) {
+      console.log(` pass changed: "" != ${this.state.password.value}` )
+      //changes = Object.assign( changes, {password: this.state.password.value} );
+      this.setState( {dialogOpen: true} );
+    }
+
     console.log(`changes: ${JSON.stringify(changes)}`);
 
     let resp = await fetch("http://localhost:5000/api/changeUserData", {
@@ -75,7 +108,7 @@ async saveAllClick() {
     resp = await resp.json();
     console.log(` res: ${ JSON.stringify( resp ) }`);
     if( resp.message === 'great succes' )
-      window.location.reload();
+      console.log("great succes");
     else 
       console.log("not so great succes");
   
@@ -92,6 +125,15 @@ async saveAllClick() {
                   Zapisz zmiany
                 </button>
             </h2>
+
+            <Dialog 
+              open={ this.state.dialogOpen } 
+              onClose={ () => this.closeDialog() }
+              handleConfirm={ () => this.confirm() }
+              handleDecline={ () => this.decline() }
+            >
+              Czy na pewno zmienić hasło?
+            </ Dialog>
 
             <div id='user_personal_data_div'>
               <InputInProfile

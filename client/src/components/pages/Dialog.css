@@ -1,0 +1,48 @@
+.dialog_button {
+    position: absolute;
+    height: 30px;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.dialog_button:hover {
+    background-color: rgb(97, 97, 97);
+}
+
+#cancle_button {
+    bottom: 10px;
+    right: 40px;
+}
+
+#ok_button {
+    bottom: 10px;
+    left: 40px;
+}
+
+#close_button {
+    width: 30px;
+    border-radius: 100%;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+#main_body {
+    position: fixed;
+    
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    
+    padding: 10px;
+    border-radius: 15px;
+    border-width: 3px;
+    border-style: solid;
+    margin: auto;
+    background-color: rgb(119, 222, 222);
+    height: 110px;
+    width: 300px;
+    text-align: center;
+}

@@ -314,31 +314,61 @@ app.get("/api", (req, res) => {
     res.json({"users":["userOne", "userTwo", "userTree"] });
 });
 
-app.post("/api/changeUserData", (req, res) => {
-    console.log( `Data to change: ${ JSON.stringify(req.body) }`);
+app.post("/api/userPasswordChange", async (req, res) => {
+    
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let token = '';
+    token += req.body.login;
+    for (let i = 0; i < 25; i++) {
+        token += characters[Math.floor(Math.random() * characters.length)];
+    }
+    try {
+        executeQuery(
+            `UPDATE db.authentication SET authentication_string=$1 WHERE id_user=${req.body.id}`,
+            [ token ]
+        );
+        executeQuery(
+            `UPDATE db.verification SET password=$1 WHERE id_user=${req.body.id}`,
+            [ hashedPassword ]
+        );
+        res.status(200).send( {message: 'success'} );
+    }
+    catch( e ) {
+        res.status(200).send( {message: 'failure', error: e} );
+    }
+});
 
+app.post("/api/changeUserData", (req, res) => {
+
+    console.log( `Data to change: ${ JSON.stringify(req.body) }`);
     let data = req.body;
     let user_id = req.body.id;
     let commit = "";
     delete data['id'];
 
     //user data change
-    console.log( '\n-------------------------------')
-    for( let key in data) {
-        if( key != 'login' )
-            commit = `UPDATE db.app_user SET ${key} = '${req.body[key]}' WHERE id_user = ${user_id}`;
-        else
-            commit = `UPDATE db.verification SET ${key} = '${req.body[key]}' WHERE id_user = ${user_id}`;
-        executeQuery(commit, []);
-        console.log( commit );
-    }
+    if(Object.keys(data).length !== 0 ) {
+        console.log( '\n-------------------------------')
+        for( let key in data) {
+            if( key != 'login' )
+                commit = `UPDATE db.app_user SET ${key} = '${req.body[key]}' WHERE id_user = ${user_id}`;
+            else
+                commit = `UPDATE db.verification SET ${key} = '${req.body[key]}' WHERE id_user = ${user_id}`;
+            executeQuery(commit, []);
+            console.log( commit );
+        }
 
-    //user history insert
-    let log_commit = `INSERT INTO db.user_history(id_user, date, type) VALUES (${user_id}, NOW(), 'user personal data changed')`;
-    executeQuery( log_commit, [] );
-    console.log( log_commit );
-    console.log( '-------------------------------\n')
-    res.status(200).send( {message: "great succes"} );
+        //user history insert
+        let log_commit = `INSERT INTO db.user_history(id_user, date, type) VALUES (${user_id}, NOW(), 'user personal data changed')`;
+        executeQuery( log_commit, [] );
+        console.log( log_commit );
+        console.log( '-------------------------------\n')
+        res.status(200).send( {message: "great success"} );
+    }
+    else {
+        console.log("no data to change sended");
+    }
 });
 
 app.get("/api/getUserData", checkNotAuthenticated, (req, res) => pool.connect().then( async client => {
