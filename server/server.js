@@ -15,6 +15,19 @@ const { Pool, Client } = require('pg')
 const initializePassport = require('./passport-config');
 const nodemailer = require('./nodemailer-config');
 
+const oneDay = 1000 * 60 * 60 * 24;
+const cookieParser = require("cookie-parser");
+app.use(session({
+    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    saveUninitialized: false,
+    cookie: { maxAge: oneDay },
+    resave: false
+}));
+app.use(cookieParser());
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+ var sesja;
 
 
 initializePassport(
@@ -42,11 +55,6 @@ app.set('view-engine', 'ejs');
 // app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(flash());
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
@@ -77,6 +85,7 @@ pool.on('error', (err, client) => {
   })
 
 app.get("/baza", (req,res) => {
+    console.log(sesja);
     pool
     .connect()
     .then(async client => {
@@ -157,6 +166,10 @@ app.get("/details/:id", (req,res) => {
 })
 
 app.get('/', checkAuthenticated, (req, res) => {
+    sesja=req.session;
+    if(session.userid){
+        console.log("Welcome User +" + session.userid);
+    }else
     res.render('index.ejs', { name: req.user.name });
 });
 
@@ -164,15 +177,22 @@ app.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs');
 });
 
-app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+
+  app.post('/login111', checkNotAuthenticated, passport.authenticate('local', {
     failureRedirect: '/login',
     failureFlash: false
 }), function(req, res) {
-    console.log('\n------------------------------\n');
-    console.log(req.user);
-    console.log('\n------------------------------\n');
-    res.status(200).send(req.user);
+    session.userid = req.user.id_user;
+    sesja = req.session;
+    console.log(req.session);
+    sesja.userid = req.user.id_user;
+    console.log(sesja.userid);
+    // console.log('\n------------------------------\n');
+    // console.log(req.user);
+    // console.log('\n------------------------------\n');
+    res.status(200).json(session.userid);
   });
+
 
 function executeQuery(query, values, callback) {
     return new Promise(function (fulfill, reject) {
@@ -390,6 +410,20 @@ function checkNotAuthenticated(req, res, next) {
         return next();
     }
 }
+
+app.get('/userid', function(req, res) {
+    console.log(sesja);
+    // console.log('\n------------------------------\n');
+    // console.log(req.user);
+    // console.log('\n------------------------------\n');
+    res.status(200).json(sesja.userid);
+  });
+
+app.get('/logout',(req,res) => {
+    console.log("sesja: " + req.session);
+    req.session.destroy();
+    res.redirect('/');
+});
 
 const PORT = process.env.PORT || 5000;
 

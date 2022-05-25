@@ -42,6 +42,19 @@ class Myprofile extends React.Component {
   }
   
   render() {
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log(this.responseText)
+      }
+    };
+    xhttp.open("GET", "http://localhost:5000/userid", true);
+    xhttp.setRequestHeader('Content-type', 'application/json');
+    xhttp.send();
+ 
+
+
     return (
       <>
         <div class='up'>
@@ -174,25 +187,25 @@ class Announcements extends React.Component {
 
 
 
-  async componentDidMount() {
-    let dbRes = (await fetch("http://localhost:5000/bazaOgloszenUsera")).json().then(
-      response => {
-        for (let i = 0; i < response.length; i+=1){
-          this.setState( {id_user: response[0].id_user} );
-          this.setState( {id_notice: response[0].id_notice} );
-          this.setState( {type: response[0].type} );
-          this.setState( {priority: response[0].priority} );
-          this.setState( {creation_date: response[0].creation_date} );
-          this.setState( {expiration_date: response[0].expiration_date} );
-          this.setState( {reports_number: response[0].reports_number} );
-          this.setState( {city: response[0].city} );
-          this.setState( {status_description: response[0].status_description} );
-          this.setState( {category: response[0].id_category} );
-        }
-        this.setState({data:response});
-      }
-    )
-  } 
+  // async componentDidMount() {
+  //   let dbRes = (await fetch("http://localhost:5000/bazaOgloszenUsera")).json().then(
+  //     response => {
+  //       for (let i = 0; i < response.length; i+=1){
+  //         this.setState( {id_user: response[0].id_user} );
+  //         this.setState( {id_notice: response[0].id_notice} );
+  //         this.setState( {type: response[0].type} );
+  //         this.setState( {priority: response[0].priority} );
+  //         this.setState( {creation_date: response[0].creation_date} );
+  //         this.setState( {expiration_date: response[0].expiration_date} );
+  //         this.setState( {reports_number: response[0].reports_number} );
+  //         this.setState( {city: response[0].city} );
+  //         this.setState( {status_description: response[0].status_description} );
+  //         this.setState( {category: response[0].id_category} );
+  //       }
+  //       this.setState({data:response});
+  //     }
+  //   )
+  // } 
 
   createNotices() {
     this.announcements = this.state.keys.map( (num) =>
