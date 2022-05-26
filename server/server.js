@@ -129,7 +129,7 @@ app.get("/bazaOgloszenUsera",checkNotAuthenticated, (req,res) => {
     .connect()
     .then(async client => {
         try {
-            const id =req.user
+            const id = sesja.userid
             console.log("to id usera",id)
             const resp = await client
                 .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status WHERE n.id_user=$1',[id]);
