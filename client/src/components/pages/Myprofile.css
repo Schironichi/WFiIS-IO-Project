@@ -82,5 +82,25 @@ button[ type='button' ]:hover {
 #user_personal_data_div {
     background: #091a72;
     color: rgb(119, 222, 222);
-    border-radius: 15px
+    border-radius: 15px;
+    padding: 40px;
+}
+
+.daneMyProfile
+{
+    width: 50%;
+    margin: 50px;
+}
+
+.upper
+{
+    float: right;
+    margin-top: -115px;
+    padding: 20px;
+    margin-right: 35px;
+}
+
+.yourAdvert
+{
+    margin-bottom: 50px;
 }

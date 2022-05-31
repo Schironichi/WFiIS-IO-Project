@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useEffect } from "react";
 import './Paging.css';
 
 export const Paging = ({
@@ -6,15 +7,16 @@ export const Paging = ({
   }) => {
     const [value, setValue] = useState(array[1].component);
     function pageChange(btn){
-        //btn.style.borderBottom=none;
         var ele=Array.from(document.getElementsByClassName("pageButton"));
-        console.log(ele);
+        //console.log(ele);
         ele.forEach(element => {
             element.style.borderBottom="2px solid #183194";
         });
         btn.target.style.borderBottom="none";
         setValue(array[btn.target.title].component);
     }
+    useEffect(() => { var ele=Array.from(document.getElementsByClassName("pageButton"));
+    if(ele[1]!=undefined)ele[1].style.borderBottom="none"; },[]);
     return (
         <div className='chosePage'>
             <ul>
