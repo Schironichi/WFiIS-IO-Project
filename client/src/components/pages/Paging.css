@@ -1,0 +1,29 @@
+.pageOne {
+    background-color: rgb(252, 253, 188);
+    margin-right: 25px;
+    margin-left: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    clear:both;
+    border: 2px solid #183194;
+}
+
+.pageOne .advert-container {
+    margin-left: 30px;
+}
+
+.chosePage li {
+    list-style-type: none;
+}
+
+.pageButton {
+    background-color: rgb(252, 253, 188);
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    float: left;
+    margin-bottom: -10px;
+    border: 2px solid #183194;
+}

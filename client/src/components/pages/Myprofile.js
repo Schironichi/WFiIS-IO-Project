@@ -5,6 +5,7 @@ import Footer from '../Footer';
 import '../Navbar.css';
 import './Myprofile.css';
 import { Advert } from './Advert';
+import  {Paging} from './Paging'
 
 class Myprofile extends React.Component {
 
@@ -101,8 +102,7 @@ class Myprofile extends React.Component {
         <div className='clear_div'> </div>
         
         <div class='down' style={ {marginBottom: '100px'} }>
-          <Announcements />
-          <Messages />
+          <Paging array={[{nr:0,title:"Ogłoszenia",component: <Announcements/>},{nr:1,title:"Powiadomienia",component: <Messages />}]}/>
         </div>
         <Footer/>
       </>
@@ -283,6 +283,8 @@ class Messages extends React.Component {
       </fieldset>
     </li>
     );
+    
+    console.log(this.messages);
   }
 
   componentDidMount() {
@@ -294,6 +296,7 @@ class Messages extends React.Component {
   }
 
   render() {
+    console.log(this.messages);
     return (
       <>
         <h2> Twoje powiadomienia </h2>
