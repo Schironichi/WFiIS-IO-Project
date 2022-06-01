@@ -165,31 +165,23 @@ app.get("/details/:id", (req,res) => {
   
 })
 
-app.get('/', checkAuthenticated, (req, res) => {
-    sesja=req.session;
-    if(session.userid){
-        console.log("Welcome User +" + session.userid);
-    }else
-    res.render('index.ejs', { name: req.user.name });
-});
-
-app.get('/login', checkNotAuthenticated, (req, res) => {
-    res.render('login.ejs');
-});
+// app.get('/', checkAuthenticated, (req, res) => {
+//     sesja=req.session;
+//     if(session.userid){
+//         console.log("Welcome User +" + session.userid);
+//     }else
+//     res.render('index.ejs', { name: req.user.name });
+// });
 
 
-  app.post('/login111', checkNotAuthenticated, passport.authenticate('local', {
-    failureRedirect: '/login',
+  app.post('/api/login', passport.authenticate('local', {
     failureFlash: false
 }), function(req, res) {
     session.userid = req.user.id_user;
     sesja = req.session;
-    console.log(req.session);
+    console.log(req.session); // temporary
     sesja.userid = req.user.id_user;
-    console.log(sesja.userid);
-    // console.log('\n------------------------------\n');
-    // console.log(req.user);
-    // console.log('\n------------------------------\n');
+    console.log(sesja.userid); // temporary
     res.status(200).json(session.userid);
   });
 
@@ -284,10 +276,6 @@ app.get("/changeToReservation/:id", (req,res) => {
       })
       
     })
-
-app.get('/register', checkNotAuthenticated, (req, res) => {
-    res.render('register.ejs');
-});
 
 app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
@@ -411,18 +399,22 @@ function checkNotAuthenticated(req, res, next) {
     }
 }
 
-app.get('/userid', function(req, res) {
+app.get('/api/userid', function(req, res) {
     console.log(sesja);
     // console.log('\n------------------------------\n');
     // console.log(req.user);
     // console.log('\n------------------------------\n');
-    res.status(200).json(sesja.userid);
+    if (sesja) {
+        res.status(200).json(sesja.userid);
+    } else {
+        res.status(403);
+    }
   });
 
-app.get('/logout',(req,res) => {
+app.get('/api/logout',(req,res) => {
     console.log("sesja: " + req.session);
     req.session.destroy();
-    res.redirect('/');
+    res.status(200).send();
 });
 
 const PORT = process.env.PORT || 5000;

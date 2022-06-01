@@ -5,6 +5,7 @@ import Home from './components/pages/Home';
 import Myprofile from './components/pages/Myprofile';
 import Organizations from './components/pages/Organizations';
 import Login from './components/pages/Login';
+import Logout from './components/pages/Logout';
 import Signup from './components/pages/Signup';
 import Regulamin from './components/pages/Regulamin';
 import Pomoc from './components/pages/Pomoc';
@@ -19,7 +20,7 @@ import Child from './components/pages/Notice_details';
 import  ReservationDetail   from './components/pages/Reservation';
 import Reservation from './components/pages/Reservation';
 import { Advert } from './components/pages/Advert';
-
+import { LoginProvider } from './LoginContext';
 
 function App()
 {
@@ -36,11 +37,13 @@ function App()
   }, [])
   return (
     <>
+    <LoginProvider>
       <Router>
         <Navbar />
         <Switch>  
           <Route path='/' exact component={Home} />
           <Route path='/login' component={Login} />     
+          <Route path='/logout' component={Logout} />     
           <Route path='/myprofile' component={Myprofile} />
           <Route path='/signup' component={Signup} />
           <Route path='/regulamin' component={Regulamin} />
@@ -58,6 +61,7 @@ function App()
         </Switch>
       <Footer/>
       </Router>
+    </LoginProvider>
     </>
     /*<div>
       {(typeof backendData.users === 'undefined') ? (

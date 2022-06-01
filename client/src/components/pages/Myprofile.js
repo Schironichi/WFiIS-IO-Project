@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import '../../App.css';
 import { ButtonDodaj } from '../Button_dodaj';
 import Footer from '../Footer';
 import '../Navbar.css';
 import './Myprofile.css';
 import { Advert } from './Advert';
+import { LoginContext } from '../../LoginContext';
+import { Redirect, useHistory } from 'react-router-dom'
 
 class Myprofile extends React.Component {
+  static contextType = LoginContext;
 
   constructor(props) {
     super(props);
@@ -42,6 +45,10 @@ class Myprofile extends React.Component {
   }
   
   render() {
+    // const [uid, setUid] = useContext(LoginContext);
+    if (this.context.uid === -1 || this.context.uid === 'undefined') {
+      <Redirect to="/login" />
+    }
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -49,7 +56,7 @@ class Myprofile extends React.Component {
         console.log(this.responseText)
       }
     };
-    xhttp.open("GET", "http://localhost:5000/userid", true);
+    xhttp.open("GET", "api/userid", true);
     xhttp.setRequestHeader('Content-type', 'application/json');
     xhttp.send();
  
