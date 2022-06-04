@@ -144,6 +144,29 @@ app.get("/bazaOgloszenUsera",checkNotAuthenticated, (req,res) => {
   
 })
 
+
+app.get("/usunOgloszenie/:id",checkNotAuthenticated, (req,res) => {
+    pool
+    .connect()
+    .then(async client => {
+        try {
+            const id_notice = req.params.id
+            console.log("id to uptade", id_notice);
+            const id = sesja.userid
+            console.log("to id usera",id)
+            executeQuery('DELETE FROM db.Notice_details WHERE id_notice=$1',[id_notice]);
+            executeQuery('DELETE FROM  db.Notice WHERE id_notice=$1',[id_notice]);
+        } catch (err_1) {
+            client.release();
+            console.log(err_1.stack);
+        }
+  })
+  
+})
+
+
+
+
 app.get("/details/:id", (req,res) => {
     pool
     .connect()
