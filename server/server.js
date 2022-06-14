@@ -15,6 +15,19 @@ const { Pool, Client } = require('pg')
 const initializePassport = require('./passport-config');
 const nodemailer = require('./nodemailer-config');
 
+const oneDay = 1000 * 60 * 60 * 24;
+const cookieParser = require("cookie-parser");
+app.use(session({
+    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    saveUninitialized: false,
+    cookie: { maxAge: oneDay },
+    resave: false
+}));
+app.use(cookieParser());
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+ var sesja;
 
 
 initializePassport(
@@ -42,11 +55,6 @@ app.set('view-engine', 'ejs');
 // app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(flash());
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
@@ -77,6 +85,7 @@ pool.on('error', (err, client) => {
   })
 
 app.get("/baza", (req,res) => {
+    console.log(sesja);
     pool
     .connect()
     .then(async client => {
@@ -120,7 +129,7 @@ app.get("/bazaOgloszenUsera",checkNotAuthenticated, (req,res) => {
     .connect()
     .then(async client => {
         try {
-            const id =req.user
+            const id = sesja.userid
             console.log("to id usera",id)
             const resp = await client
                 .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status WHERE n.id_user=$1',[id]);
@@ -134,6 +143,29 @@ app.get("/bazaOgloszenUsera",checkNotAuthenticated, (req,res) => {
   })
   
 })
+
+
+app.get("/usunOgloszenie/:id",checkNotAuthenticated, (req,res) => {
+    pool
+    .connect()
+    .then(async client => {
+        try {
+            const id_notice = req.params.id
+            console.log("id to uptade", id_notice);
+            const id = sesja.userid
+            console.log("to id usera",id)
+            executeQuery('DELETE FROM db.Notice_details WHERE id_notice=$1',[id_notice]);
+            executeQuery('DELETE FROM  db.Notice WHERE id_notice=$1',[id_notice]);
+        } catch (err_1) {
+            client.release();
+            console.log(err_1.stack);
+        }
+  })
+  
+})
+
+
+
 
 app.get("/details/:id", (req,res) => {
     pool
@@ -156,19 +188,26 @@ app.get("/details/:id", (req,res) => {
   
 })
 
-app.get('/', checkAuthenticated, (req, res) => {
-    res.render('index.ejs', { name: req.user.name });
-});
+// app.get('/', checkAuthenticated, (req, res) => {
+//     sesja=req.session;
+//     if(session.userid){
+//         console.log("Welcome User +" + session.userid);
+//     }else
+//     res.render('index.ejs', { name: req.user.name });
+// });
 
-app.get('/login', checkNotAuthenticated, (req, res) => {
-    res.render('login.ejs');
-});
 
-app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true
-}));
+  app.post('/api/login', passport.authenticate('local', {
+    failureFlash: false
+}), function(req, res) {
+    session.userid = req.user.id_user;
+    sesja = req.session;
+    console.log(req.session); // temporary
+    sesja.userid = req.user.id_user;
+    console.log(sesja.userid); // temporary
+    res.status(200).json(session.userid);
+  });
+
 
 function executeQuery(query, values, callback) {
     return new Promise(function (fulfill, reject) {
@@ -224,7 +263,19 @@ app.get("/changeToReservation/:id", (req,res) => {
       
     })
 
-
+    app.get("/edited", (req,res) => {  
+        pool
+        .connect()
+        .then(async client => {
+            try {
+                executeQuery("UPDATE notice_details SET notice_description = $1 WHERE id_notice = $2", [req.content, req.id_notice]);
+                executeQuery("UPDATE notice SET id_category = $1 WHERE id_notice = $2", [req.category, req.id_notice]);
+            } catch (err_1) {
+                console.log(err_1.stack);
+            }
+      })
+      
+    })
 
     app.get("/updateNoticeHistory/:id", (req,res) => {  
         pool
@@ -248,10 +299,6 @@ app.get("/changeToReservation/:id", (req,res) => {
       })
       
     })
-
-app.get('/register', checkNotAuthenticated, (req, res) => {
-    res.render('register.ejs');
-});
 
 app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
@@ -424,6 +471,24 @@ function checkNotAuthenticated(req, res, next) {
         return next();
     }
 }
+
+app.get('/api/userid', function(req, res) {
+    console.log(sesja);
+    // console.log('\n------------------------------\n');
+    // console.log(req.user);
+    // console.log('\n------------------------------\n');
+    if (sesja) {
+        res.status(200).json(sesja.userid);
+    } else {
+        res.status(403);
+    }
+  });
+
+app.get('/api/logout',(req,res) => {
+    console.log("sesja: " + req.session);
+    req.session.destroy();
+    res.status(200).send();
+});
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import '../../App.css';
 import { ButtonDodaj } from '../Button_dodaj';
 import Footer from '../Footer';
@@ -6,10 +6,30 @@ import '../Navbar.css';
 import './Myprofile.css';
 import { Advert } from './Advert';
 import { Paging } from './Paging'
+import { LoginContext } from '../../LoginContext';
+import { Redirect, useHistory } from 'react-router-dom'
 
 class Myprofile extends React.Component {
+  static contextType = LoginContext;
 
   render() {
+    // const [uid, setUid] = useContext(LoginContext);
+    if (this.context.uid === -1 || this.context.uid === 'undefined') {
+      <Redirect to="/login" />
+    }
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log(this.responseText)
+      }
+    };
+    xhttp.open("GET", "api/userid", true);
+    xhttp.setRequestHeader('Content-type', 'application/json');
+    xhttp.send();
+ 
+
+
     return (
       <>
         <div className='clear_div'> </div>
@@ -171,28 +191,51 @@ class Announcements extends React.Component {
 
 
 
-  async componentDidMount() {
-    let dbRes = (await fetch("http://localhost:5000/bazaOgloszenUsera")).json().then(
-      response => {
-        for (let i = 0; i < response.length; i += 1) {
-          this.setState({ id_user: response[0].id_user });
-          this.setState({ id_notice: response[0].id_notice });
-          this.setState({ type: response[0].type });
-          this.setState({ priority: response[0].priority });
-          this.setState({ creation_date: response[0].creation_date });
-          this.setState({ expiration_date: response[0].expiration_date });
-          this.setState({ reports_number: response[0].reports_number });
-          this.setState({ city: response[0].city });
-          this.setState({ status_description: response[0].status_description });
-          this.setState({ category: response[0].id_category });
-        }
-        this.setState({ data: response });
-      }
-    )
+  // async componentDidMount() {
+  //   let dbRes = (await fetch("http://localhost:5000/bazaOgloszenUsera")).json().then(
+  //     response => {
+  //       for (let i = 0; i < response.length; i+=1){
+  //         this.setState( {id_user: response[0].id_user} );
+  //         this.setState( {id_notice: response[0].id_notice} );
+  //         this.setState( {type: response[0].type} );
+  //         this.setState( {priority: response[0].priority} );
+  //         this.setState( {creation_date: response[0].creation_date} );
+  //         this.setState( {expiration_date: response[0].expiration_date} );
+  //         this.setState( {reports_number: response[0].reports_number} );
+  //         this.setState( {city: response[0].city} );
+  //         this.setState( {status_description: response[0].status_description} );
+  //         this.setState( {category: response[0].id_category} );
+  //       }
+  //       this.setState({data:response});
+  //     }
+  //   )
+  // } 
+
+  createNotices() {
+    this.announcements = this.state.keys.map( (num) =>
+    <li key={ num.toString() } className='notices_li'>
+      <fieldset className='notices_filedset'>
+        
+        <div className='notices_value_div'>
+          <div> <h1> Ogłoszenie {num + 1} </h1> </div>
+          <div>
+            <p> { this.state.values[num] } </p>
+          </div>
+        </div>
+
+        <div className='notices_buttons_div'>
+          <button type='button'> Edytuj </button>
+          <button type='button'> Usuń </button>
+        </div>
+
+        <div className='clear_div' ></div>
+      </fieldset>
+    </li>
+    );
   }
 
   async componentDidMount() {
-    let dbRes = (await fetch("http://localhost:5000/baza")).json().then(
+    let dbRes = (await fetch("http://localhost:5000/bazaOgloszenUsera")).json().then(
       response => {
         for (let i = 0; i < response.length; i += 1) {
           this.setState({ id_user: response[0].id_user });

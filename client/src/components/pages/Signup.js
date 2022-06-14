@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import '../../App.css';
 import { Button } from '../Button';
 import Footer from '../Footer';
 import '../Navbar.css';
 import './Login.css';
+import { LoginContext } from '../../LoginContext';
+import { useHistory } from 'react-router-dom'
 
 function Signup() {
-  
+  const [uid, setUid] = useContext(LoginContext);
+  const history = useHistory();
+  useEffect(() => {
+    if (uid !== -1 && uid !== 'undefined') {
+      return history.push('/myprofile');
+    }
+  }, []);
 
   return (
     
