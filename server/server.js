@@ -400,7 +400,7 @@ app.get("/api/getUserData", checkNotAuthenticated, (req, res) => pool.connect().
 
     if ( /*req.user*/ true ) {
         
-        const user_id = 16;//req.user;
+        const user_id = 18;//req.user;
         db_user_data = await client.query(
         `SELECT login, name, surname, email FROM
             db.app_user AS au JOIN

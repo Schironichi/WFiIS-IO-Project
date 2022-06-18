@@ -109,6 +109,8 @@ async saveAllClick() {
     console.log(` res: ${ JSON.stringify( resp ) }`);
     if( resp.message === 'great succes' )
       console.log("great succes");
+      if( this.state.password.value == "" )
+        window.location.reload();
     else 
       console.log("not so great succes");
   

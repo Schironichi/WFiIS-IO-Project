@@ -1,13 +1,18 @@
 .dialog_button {
+    background-color: rgb(212, 212, 212);
     position: absolute;
     height: 30px;
+    width: 60px;
     border-radius: 10px;
-    border-style: solid;
-    border-width: 1px;
+    border-style: none;
 }
 
 .dialog_button:hover {
-    background-color: rgb(97, 97, 97);
+    background-color: rgb(129, 129, 129);
+}
+
+.dialog_button:active {
+    background-color: #091a72;
 }
 
 #cancle_button {
@@ -38,10 +43,11 @@
     
     padding: 10px;
     border-radius: 15px;
-    border-width: 3px;
+    border-width: 2px;
     border-style: solid;
+    border-color: rgb(119, 222, 222);
     margin: auto;
-    background-color: rgb(119, 222, 222);
+    background-color: white;
     height: 110px;
     width: 300px;
     text-align: center;

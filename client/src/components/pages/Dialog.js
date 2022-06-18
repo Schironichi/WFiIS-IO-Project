@@ -10,7 +10,7 @@ class Dialog extends React.Component {
         if( this.props.open === true )
             dialog = (
                 <div id="main_body">
-                    <button className="dialog_button" id="close_button" onClick={ this.props.onClose }> x </button>
+                    <button className="dialog_button" id="close_button" onClick={ this.props.onClose }>  &times; </button>
                     <br/>
                     <p>
                         {this.props.children}
