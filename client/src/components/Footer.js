@@ -46,30 +46,11 @@ function Footer() {
         <div class='social-media-wrap'>
                     
           <div class='social-icons'>
-            <Link
-              class='social-icon-link facebook'
-              to='/'
-              target='_blank'
-              aria-label='Facebook'
-            >
-              <i class='fab fa-facebook-f' />
-            </Link>
-            <Link
-              class='social-icon-link instagram'
-              to='/'
-              target='_blank'
-              aria-label='Instagram'
-            >
-              <i class='fab fa-instagram' />
-            </Link>
-            <Link
-              class='social-icon-link twitter'
-              to='/'
-              target='_blank'
-              aria-label='Twitter'
-            >
-              <i class='fab fa-twitter' />
-            </Link>
+           
+            <a class='social-icon-link facebook' href="https://www.facebook.com/"><i class='fab fa-facebook-f' /></a>
+            <a class='social-icon-link instagram' href="https://www.instagram.com/"><i class='fab fa-instagram' /></a>
+            <a class='social-icon-link twitter' href="https://twitter.com/?lang=pl"><i class='fab fa-twitter' /></a>
+           
           </div>
         </div>
       </section>

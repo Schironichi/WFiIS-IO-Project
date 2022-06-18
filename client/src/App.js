@@ -3,9 +3,14 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/pages/Home';
 import Myprofile from './components/pages/Myprofile';
-
+import Organizations from './components/pages/Organizations';
 import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
+import Regulamin from './components/pages/Regulamin';
+import Pomoc from './components/pages/Pomoc';
+import Tworcy from './components/pages/Tworcy';
+import Kontakt from './components/pages/Kontakt';
+
 import Dodaj_ogloszenie from './components/pages/Dodaj_ogloszenie'
 import Footer from './components/Footer';
 import Notice_details from './components/pages/Notice_details';
@@ -13,6 +18,7 @@ import Child from './components/pages/Notice_details';
 import  ReservationDetail   from './components/pages/Reservation';
 import Reservation from './components/pages/Reservation';
 import { Advert } from './components/pages/Advert';
+
 
 function App()
 {
@@ -36,10 +42,16 @@ function App()
           <Route path='/login' component={Login} />     
           <Route path='/myprofile' component={Myprofile} />
           <Route path='/signup' component={Signup} />
+          <Route path='/regulamin' component={Regulamin} />
+          <Route path='/pomoc' component={Pomoc} />
+          <Route path='/tworcy' component={Tworcy} />
+          <Route path='/kontakt' component={Kontakt} />
           <Route path='/dodaj' component={Dodaj_ogloszenie} />
           <Route path='/noticedetails/:id' component={Notice_details}/>
-          <Route path='/zarezerwowano/:id' component={Reservation}>
-          </Route>
+          <Route path='/zarezerwowano/:id' component={Reservation}/>
+
+          <Route path='/organizacje_charytatywne' component={Organizations} />
+        
 
         </Switch>
       <Footer/>
