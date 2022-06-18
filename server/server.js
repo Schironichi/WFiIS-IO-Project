@@ -129,7 +129,8 @@ app.get("/bazaOgloszenUsera",checkNotAuthenticated, (req,res) => {
     .connect()
     .then(async client => {
         try {
-            const id = sesja.userid
+            //const id = sesja.userid
+            const id = 18;
             console.log("to id usera",id)
             const resp = await client
                 .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status WHERE n.id_user=$1',[id]);
@@ -152,7 +153,8 @@ app.get("/usunOgloszenie/:id",checkNotAuthenticated, (req,res) => {
         try {
             const id_notice = req.params.id
             console.log("id to uptade", id_notice);
-            const id = sesja.userid
+            //const id = sesja.userid
+            const id = 18
             console.log("to id usera",id)
             executeQuery('DELETE FROM db.Notice_details WHERE id_notice=$1',[id_notice]);
             executeQuery('DELETE FROM  db.Notice WHERE id_notice=$1',[id_notice]);
