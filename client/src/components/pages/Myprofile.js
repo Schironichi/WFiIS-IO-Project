@@ -4,6 +4,7 @@ import { ButtonDodaj } from '../Button_dodaj';
 import Footer from '../Footer';
 import '../Navbar.css';
 import './Myprofile.css';
+import Dialog from '../Dialog';
 import { Advert } from './Advert';
 import { Paging } from './Paging'
 import { LoginContext } from '../../LoginContext';
@@ -86,28 +87,60 @@ class InputInProfile extends React.Component {
 }
 
 class YourData extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      userName: "Login",
-      firstName: "Imie",
-      lastName: "Nazwisko",
-      email: "Email",
-      password: "Hasło",
-      serverFirstName: "",
-      serverLastName: "",
-
+      id: { value: 'None' },
+      login: { value: "Login" },
+      firstName: { value: "Imie" },
+      lastName: { value: "Nazwisko"},
+      email: { value: "Email" },
+      password: { value: "" },
     };
   }
 
   async componentDidMount() {
     //taking user data from server
-    let data = (await fetch("http://localhost:5000/api/getUserData")).json();
-    this.setState({ serverFirstName: (await data).firstName });
-    this.setState({ serverLastName: (await data).lastName });
-    this.setState({ firstName: (await data).firstName });
-    this.setState({ lastName: (await data).lastName });
+    let data = await (await fetch("http://localhost:5000/api/getUserData")).json();
 
+    console.log( `data: ${ JSON.stringify(data) }` );
+    if ( data.logged === false ) {
+      window.location.replace("http://localhost:3000/login");
+    }
+    else {
+      this.setState( { firstName: { value: data.firstName} } );
+      this.setState( { lastName: { value: data.lastName} } );
+      this.setState( { email: { value: data.email} })
+      this.setState( { login: { value: data.login} })
+      this.setState( { id: {value: data.id} } );
+      this.setState( { dialogOpen: false } );
+    }
+  }
+
+  closeDialog() {
+    this.setState( {dialogOpen: false} );
+  }
+
+  async confirm() {
+    let res = await fetch("http://localhost:5000/api/userPasswordChange", {
+      method: "POST",
+      headers:{ "Accept": "application/json", 'Content-Type': 'application/json' },
+      body: JSON.stringify( { 
+        id: this.state.id.value,
+        login: this.state.login,
+        password: this.state.password.value
+      } )
+    });
+
+    res = await res.json();
+    console.log( JSON.stringify( res ) );
+    this.closeDialog();
+    window.location.reload();
+  }
+
+  decline() {
+    this.closeDialog();
   }
 
   changeInput(evt, property) {
@@ -115,47 +148,98 @@ class YourData extends React.Component {
     this.setState(property);
   }
 
-  saveAllClick() {
-    //all changes saved in state send to server
+  async saveAllClick() {
+        //all changes saved in state send to server
+        let changes = { id: this.state.id.value };
+        let data = await ( (await fetch("http://localhost:5000/api/getUserData")).json() );
+        
+        console.log( `data: ${data}` );
+        if( data.login !== this.state.login.value ) {
+          console.log(` login changed: ${data.login} != ${this.state.login.value}` )
+          changes = Object.assign( changes, {login: this.state.login.value } );
+        }
+        if( data.firstName !== this.state.firstName.value ) {
+          console.log(` fname changed: ${data.firstName} != ${this.state.firstName.value}` )
+          changes = Object.assign( changes, {name : this.state.firstName.value} );
+        }
+        if( data.lastName !== this.state.lastName.value ) {
+          console.log(` lname changed: ${data.lastName} != ${this.state.lastName.value}` )
+          changes = Object.assign( changes, {surname: this.state.lastName.value} );
+        }
+        if( data.email !== this.state.email.value ) {
+          console.log(` email changed: ${data.email} != ${this.state.email.value}` )
+          changes = Object.assign( changes, {email: this.state.email.value} );
+        }
+    
+        if( this.state.password.value !== "" ) {
+          console.log(` pass changed: "" != ${this.state.password.value}` )
+          this.setState( {dialogOpen: true} );
+        }
+    
+        console.log(`changes: ${JSON.stringify(changes)}`);
+    
+        let resp = await fetch("http://localhost:5000/api/changeUserData", {
+          method: 'POST',
+          headers:{ "Accept": "application/json", 'Content-Type': 'application/json' },
+          body: JSON.stringify(changes)
+        });
+        resp = await resp.json();
+        console.log(` res: ${ JSON.stringify( resp ) }`);
+        if( resp.message === 'great succes' )
+          console.log("succes");
+          if( this.state.password.value == "" )
+            window.location.reload();
+        else 
+          console.log("fail");    
   }
   render() {
     return (
       <div class='daneMyProfile'>
+
+        <Dialog 
+          open={ this.state.dialogOpen } 
+          onClose={ () => this.closeDialog() }
+          handleConfirm={ () => this.confirm() }
+          handleDecline={ () => this.decline() }
+        >
+          Czy na pewno zmienić hasło?
+        </ Dialog>
+
         <div id='user_personal_data_div'>
-          <InputInProfile
-            type='text'
-            label='Login'
-            value={this.state.userName}
-            onChange={(evt) => this.changeInput(evt, this.state.userName)}
-          />
+        <InputInProfile
+          type='text'
+          label='Login'
+          value={this.state.login.value}
+          onChange={ (evt) => this.changeInput(evt, this.state.login) }
+        />
 
-          <InputInProfile
-            type='text'
-            label='Imie'
-            value={this.state.firstName}
-            onChange={(evt) => this.changeInput(evt, this.state.firstName)}
-          />
+        <InputInProfile 
+          type='text'
+          label='Imie' 
+          value={this.state.firstName.value} 
+          onChange={ (evt) => this.changeInput(evt, this.state.firstName) } 
+        />
 
-          <InputInProfile
-            type='text'
-            label='Nazwisko'
-            value={this.state.lastName}
-            onChange={(evt) => this.changeInput(evt, this.state.lastName)}
-          />
+        <InputInProfile 
+          type='text'
+          label='Nazwisko' 
+          value={this.state.lastName.value} 
+          onChange={ (evt) => this.changeInput(evt, this.state.lastName) } 
+        />
 
-          <InputInProfile
-            type='email'
-            label='Email'
-            value={this.state.email}
-            onChange={(evt) => this.changeInput(evt, this.state.email)}
-          />
+        <InputInProfile 
+          type='email'
+          label='Email' 
+          value={this.state.email.value} 
+          onChange={ (evt) => this.changeInput(evt, this.state.email) } 
+        />
 
-          <InputInProfile
-            type='password'
-            label='Hasło'
-            value={this.state.password}
-            onChange={(evt) => this.changeInput(evt, this.state.password)}
-          />
+        <InputInProfile 
+          type='password'
+          label='Hasło' 
+          value={this.state.password.value} 
+          onChange={ (evt) => this.changeInput(evt, this.state.password) } 
+        />
           <button type='button' onClick={() => this.saveAllClick(this)} style={{
             float: "right",
             marginTop: "-60px"
