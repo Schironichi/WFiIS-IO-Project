@@ -359,10 +359,10 @@ app.post('/dodaj_ogloszenie', async (req, res) => {
         console.log(req.body.lokalizacja);
         executeQuery(
             `INSERT INTO db.Notice (id_category,id_subcategory,  id_organization, id_status, id_user, type, priority, creation_date, expiration_date, reports_number, city) 
-            VALUES ($1,1,1,'active', $2, $3, 'wyroznione', CURRENT_DATE,CURRENT_DATE + INTERVAL '5 day', 0, $4) returning id_notice`,
+            VALUES ($1,1,1,'active', 18, $2, 'wyroznione', CURRENT_DATE,CURRENT_DATE + INTERVAL '5 day', 0, $3) returning id_notice`,
             [
                 req.body.kategoria,
-                req.body.uzytkownik,
+                //req.body.uzytkownik,
                 req.body.typ,
                 req.body.lokalizacja
             ]
