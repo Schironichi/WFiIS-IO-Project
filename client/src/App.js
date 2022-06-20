@@ -13,6 +13,8 @@ import Tworcy from './components/pages/Tworcy';
 import Kontakt from './components/pages/Kontakt';
 import EditNotice from './components/pages/EditNotice'
 import DeleteNotice from './components/pages/DeleteNotice'
+import Canceling from './components/pages/Canceling'
+import Completing from './components/pages/Completing'
 
 import Dodaj_ogloszenie from './components/pages/Dodaj_ogloszenie'
 import Footer from './components/Footer';
@@ -56,6 +58,8 @@ function App()
           <Route path='/zarezerwowano/:id' component={Reservation}/>
           <Route path='/editing/:id' component={EditNotice} />
           <Route path='/deleting/:id' component={DeleteNotice} />
+          <Route path='/canceling/:id' component={Canceling} />
+          <Route path='/completing/:id' component={Completing} />
 
           <Route path='/organizacje_charytatywne' component={Organizations} />
         

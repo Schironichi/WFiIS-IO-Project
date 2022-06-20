@@ -6,6 +6,7 @@ import '../Navbar.css';
 import './Myprofile.css';
 import Dialog from '../Dialog';
 import { Advert } from './Advert';
+import { Message } from './Message';
 import { Paging } from './Paging'
 import { LoginContext } from '../../LoginContext';
 import { Redirect, useHistory } from 'react-router-dom'
@@ -358,45 +359,64 @@ class Announcements extends React.Component {
 
 
 class Messages extends React.Component {
+
   constructor(props) {
     super(props);
-
-    this.state = { keys: [0], values: ["Puste Pole"] };
+    this.state = {
+      data: [],
+      visableData: [],
+      type: "",
+      priority: "",
+      creation_date: "",
+      expiration_date: "",
+      reports_number: "",
+      city: "",
+      status: "",
+      category: ""
+    };
     this.messages = null;
+
   }
 
-  componentDidMount() {
-    //send request for messages data
-    let numbers = [0, 1, 2];
-    let data = ["Lorem   Ipsum1", "Lorem Ipsum2", "Lorem Ipsum3"];
 
-    this.setState({ keys: numbers, values: data });
+  async componentDidMount() {
+    let dbRes = (await fetch("http://localhost:5000/ogloszeniaReserved")).json().then(
+      response => {
+        for (let i = 0; i < response.length; i += 1) {
+          this.setState({ id_user: response[0].id_user });
+          this.setState({ id_notice: response[0].id_notice });
+          this.setState({ type: response[0].type });
+          this.setState({ priority: response[0].priority });
+          this.setState({ creation_date: response[0].creation_date });
+          this.setState({ expiration_date: response[0].expiration_date });
+          this.setState({ reports_number: response[0].reports_number });
+          this.setState({ city: response[0].city });
+          this.setState({ status_description: response[0].status_description });
+          this.setState({ category: response[0].id_category });
+        }
+        this.setState({ data: response });
+      }
+    )
   }
+
+  // componentDidMount() {
+  //   //send request for messages data
+  //   let numbers = [0, 1, 2];
+  //   let data = ["Lorem   Ipsum1", "Lorem Ipsum2", "Lorem Ipsum3"];
+
+  //   this.setState({ keys: numbers, values: data });
+  // }
 
   render() {
+    const { data } = this.state;
+    console.log(data)
     return (
       <>
         <div>
           <ul className='notices_ul'>
-            {this.state.keys.map((num) =>
-              <li key={num.toString()} className='notices_li' >
-                <fieldset className='notices_filedset'>
-
-                  <div className='notices_value_div'>
-                    <div> <h1> powiadomienie {num + 1} </h1> </div>
-                    <div>
-                      <p> {this.state.values[num]} </p>
-                    </div>
-                  </div>
-
-                  <div className='notices_buttons_div'>
-                    <button type='button'> Potwierdź </button>
-                    <button type='button'> Anuluj </button>
-                  </div>
-
-                  <div className='clear_div'></div>
-                </fieldset>
-              </li>)}
+          {data.map(adv => (
+            <Message key={adv.id_notice} data={adv} buttons={["Anuluj", "Akceptuj"]} res={["canceling", "can", "completing", "acc"]} />
+          ))}
           </ul>
         </div>
       </>

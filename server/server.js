@@ -573,3 +573,108 @@ const server=app.listen(PORT, () => {
 });
 
 module.exports = server
+
+app.post("/api/editNotice", (req,res) => {  
+    try {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        var kat = 
+
+        today = yyyy + '-' + mm + '-' + dd ;
+        console.log(today)
+        executeQuery("UPDATE db.notice_details SET notice_description = $1 WHERE id_notice = $2", [req.body.tresc, req.body.editId]);
+        executeQuery("UPDATE db.notice SET id_category = $1, creation_date = 'NOW' WHERE id_notice = $2", [req.body.kategoria, req.body.editId]);
+        executeQuery("INSERT INTO db.Activitiy (id_notice, type, date, activity_description) VALUES ($1, $2, $3, $4);", [req.body.editId, "edit", today , "edycja ogloszenia"]);
+
+    } catch (err_1) {
+        console.log(err_1.stack);
+    }
+});
+
+app.get("/ogloszeniaReserved",checkNotAuthenticated, (req,res) => {
+pool
+.connect()
+.then(async client => {
+    try {
+        //const id = sesja.userid
+        const id = 18;
+        console.log("to id usera",id)
+        const resp = await client
+            .query("SELECT * FROM db.Notice n join db.Notice_status ns on n.id_status=ns.id_status WHERE n.id_user=$1 AND ns.status_description = 'reserved' ",[id]);
+        console.log(resp.rows);
+        res.status(200).send(resp.rows);
+        client.release();
+    } catch (err_1) {
+        client.release();
+        console.log(err_1.stack);
+    }
+})
+
+})
+
+app.get("/cancelReservation/:id",checkNotAuthenticated, (req,res) => {
+pool
+.connect()
+.then(async client => {
+    try {
+        //const id = sesja.userid
+        const id_not = req.params.id
+        console.log(id_not)
+        const id = 18;
+        console.log("to id usera",id);
+        const resp = await client
+            .query("UPDATE db.Notice n SET id_status = 'ACT' WHERE n.id_notice=$1; ",[id_not]);
+        console.log(resp.rows); 
+        res.status(200).send(resp.rows);
+        client.release();
+    } catch (err_1) {
+        client.release();
+        console.log(err_1.stack);
+    }
+})
+
+})
+
+app.get("/completingReservation/:id",checkNotAuthenticated, (req,res) => {
+pool
+.connect()
+.then(async client => {
+    try {
+        //const id = sesja.userid
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        var hh = today.getHours();
+        var mn = today.getMinutes();
+        var ss = today.getSeconds();
+
+        var todayD = yyyy + '-' + mm + '-' + dd ;
+        var today1 = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + mn + ':' + ss  ;
+        console.log(today)
+        const id_not = req.params.id
+        console.log(id_not)
+        const Biorca = await client
+            .query("SELECT * FROM db.Notice n JOIN db.App_user au on n.id_user = au.id_user  WHERE n.id_notice=$1; ",[id_not]);
+        const id = 18;
+        const emailTo = await client
+            .query("SELECT email FROM db.App_user WHERE id_user=$1; ",[id]);
+        console.log("to id usera",id);
+
+        console.log(id_not)
+        executeQuery("INSERT INTO db.Activitiy (id_notice, type, date, activity_description) VALUES ($1, $2, $3, $4);", [id_not, "completion", todayD , "Pomyslne zatwierdzenie rezerwacji"]);
+        executeQuery("INSERT INTO db.User_history (id_user, date, type) VALUES ($1, $2, $3);", [id, today1 , 'reservationCompletion']);
+        const resp = await client
+            .query("UPDATE db.Notice n SET id_status = 'COM' WHERE n.id_notice=$1; ",[id_not]);
+        console.log(resp.rows);
+        nodemailer.sendCompletingMail(Biorca.rows[0].email, Biorca.rows[0].name, Biorca.rows[0].surname, "sakorgaming@gmail.com", id_not)
+        res.status(200).send(resp.rows);
+        client.release();
+    } catch (err_1) {
+        client.release();
+        console.log(err_1.stack);
+    }
+})
+})
