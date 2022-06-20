@@ -7,13 +7,20 @@ const nodemailer = require("nodemailer");
 const user = process.env.MAIL_USER;
 const pass = process.env.MAIL_PASS;
 
-const transport = nodemailer.createTransport({
-  service: "Gmail",
-  auth: {
-    user: user,
-    pass: pass,
-  },
-});
+let selfSignedConfig = {
+	host: 't.pl',
+	port: 465,
+	secure: true, // użwa TLS
+	auth: {
+		user: user, pass: pass
+	},
+	tls: {
+		// nie przerywa przy błędnym certyfikacie
+		rejectUnauthorized: false
+	}
+};
+
+const transport = nodemailer.createTransport(selfSignedConfig);
 
 module.exports.sendConfirmationEmail = (name, email, confirmationCode) => {
     console.log("Check");
