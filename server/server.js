@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express');
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const app = express();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
@@ -24,7 +24,7 @@ app.use(session({
     resave: false
 }));
 app.use(cookieParser());
-
+app.use(bodyParser.json()); //for changeuserdata 
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
  var sesja;
@@ -129,7 +129,8 @@ app.get("/bazaOgloszenUsera",checkNotAuthenticated, (req,res) => {
     .connect()
     .then(async client => {
         try {
-            const id = sesja.userid
+            //const id = sesja.userid
+            const id = 18;
             console.log("to id usera",id)
             const resp = await client
                 .query('SELECT * FROM  db.Notice n join db.Notice_status ns on n.id_status=ns.id_status WHERE n.id_user=$1',[id]);
@@ -152,7 +153,8 @@ app.get("/usunOgloszenie/:id",checkNotAuthenticated, (req,res) => {
         try {
             const id_notice = req.params.id
             console.log("id to uptade", id_notice);
-            const id = sesja.userid
+            //const id = sesja.userid
+            const id = 18
             console.log("to id usera",id)
             executeQuery('DELETE FROM db.Notice_details WHERE id_notice=$1',[id_notice]);
             executeQuery('DELETE FROM  db.Notice WHERE id_notice=$1',[id_notice]);
@@ -434,22 +436,95 @@ app.get("/api", (req, res) => {
     res.json({"users":["userOne", "userTwo", "userTree"] });
 });
 
-app.get("/api/getUserData", (req, res) => {
+app.post("/api/userPasswordChange", async (req, res) => {
     
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let token = '';
+    token += req.body.login;
+    for (let i = 0; i < 25; i++) {
+        token += characters[Math.floor(Math.random() * characters.length)];
+    }
     try {
-        let fname = "Bilbo";
-        let lname = "Baggins";
-        let data = {
-                firstName: fname,
-                lastName: lname
-        };
-        console.log("userData sended");
-        res.status(200).send(data);
-    } catch {
-        console.log("Sth gone wrong");
-        res.end();
+        executeQuery(
+            `UPDATE db.authentication SET authentication_string=$1 WHERE id_user=${req.body.id}`,
+            [ token ]
+        );
+        executeQuery(
+            `UPDATE db.verification SET password=$1 WHERE id_user=${req.body.id}`,
+            [ hashedPassword ]
+        );
+        res.status(200).send( {message: 'success'} );
+    }
+    catch( e ) {
+        res.status(200).send( {message: 'failure', error: e} );
     }
 });
+
+app.post("/api/changeUserData", (req, res) => {
+
+    console.log( `Data to change: ${ JSON.stringify(req.body) }`);
+    let data = req.body;
+    let user_id = req.body.id;
+    let commit = "";
+    delete data['id'];
+
+    //user data change
+    if(Object.keys(data).length !== 0 ) {
+        console.log( '\n-------------------------------')
+        for( let key in data) {
+            if( key != 'login' )
+                commit = `UPDATE db.app_user SET ${key} = '${req.body[key]}' WHERE id_user = ${user_id}`;
+            else
+                commit = `UPDATE db.verification SET ${key} = '${req.body[key]}' WHERE id_user = ${user_id}`;
+            executeQuery(commit, []);
+            console.log( commit );
+        }
+
+        //user history insert
+        let log_commit = `INSERT INTO db.user_history(id_user, date, type) VALUES (${user_id}, NOW(), 'user personal data changed')`;
+        executeQuery( log_commit, [] );
+        console.log( log_commit );
+        console.log( '-------------------------------\n')
+        res.status(200).send( {message: "great success"} );
+    }
+    else {
+        console.log("no data to change sended");
+        res.status(200).send( {message: "great succes"} );
+    }
+});
+
+app.get("/api/getUserData", checkNotAuthenticated, (req, res) => pool.connect().then( async client => {
+
+    let data;
+
+    if ( /*req.user*/ true ) {
+        
+        const user_id = 18;//req.user;
+        db_user_data = await client.query(
+        `SELECT login, name, surname, email FROM
+            db.app_user AS au JOIN
+            db.verification AS ve ON au.id_user = ve.id_user
+                WHERE au.id_user = $1 ;`,
+        [user_id]);
+
+        db_user_data = db_user_data.rows[0];
+
+        data = {
+            id: user_id,
+            login: db_user_data.login,
+            firstName: db_user_data.name,
+            lastName: db_user_data.surname,
+            email: db_user_data.email
+        }
+        console.log( `data from db: ${JSON.stringify(db_user_data)}`);
+        res.status(200).send(data);
+    } else {
+        console.log("Cannot get user data. not logged");
+        res.status(200).send( {logged: false} ); 
+    }
+}));
+
 
 app.delete('/logout', (req, res) => {
     req.logOut();
